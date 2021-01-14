@@ -1,0 +1,51 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  margin: 0;
+}
+
+main {
+  display: flex;
+  flex-direction: row;
+}
+
+section {
+  flex-grow: 6;
+}
+
+.grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  /* border: 1px solid green; */
+  width: 600px;
+  height: 600px;
+  margin: 50px;
+}
+
+.cell {
+  border: 1px solid green;
+  font-size: 15px;
+}
+
+.ship {
+  background-color: grey;
+}
+
+aside {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.rotateButton {
+  justify-content: center;
+  align-content: center;
+  margin-top: 300px;
+}

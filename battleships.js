@@ -84,10 +84,12 @@ class Ship {
         displayCounter2 --
       }
       //decreaseDisplayCounter(this.bodyCells)                                    
-      this.bodyCells.forEach((block) => {        // adding body cells to HTML to be visualised
-        fullCells.push(block)                    // adding cells to 'full' array -- they are not taken up by ships
-        const cell = document.getElementById(block)
-        cell.classList.add('ship')
+      this.bodyCells.forEach((block) => {        
+        fullCells.push(block)                              // adding cells to 'full' array -- they are not taken up by ships
+        if (this.board === 1) {
+          const cell = document.getElementById(block)      // adding body cells to HTML to be visualised (only if they are Human's ships)
+          cell.classList.add('ship')                        
+        }
         console.log('adding ship: ' + this.name + ' to ' + position + ' rotation: ' + this.rotation)
       })
     } else {

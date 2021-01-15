@@ -47,5 +47,24 @@ aside {
 .rotateButton {
   justify-content: center;
   align-content: center;
-  margin-top: 300px;
+  margin-top: 200px;
+  margin-bottom: 200px;
+}
+
+.nextTurnButton {
+  justify-content: center;
+  align-content: center;
+  margin-top: 50px;
+}
+
+.hover {
+  background-color: greenyellow;
+}
+
+#rotate1 {
+  flex-grow: 1;
+}
+
+#rotate2 {
+  flex-grow: 1;
 }

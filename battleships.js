@@ -12,9 +12,10 @@ class Board {
 
   display() {
     // create grid to hold board
-    const grid = document.createElement('div')
-    grid.classList.add ('grid')
-    section.appendChild(grid)
+    const gridId = '#grid' + this.boardNum
+    const grid = document.querySelector(gridId)
+    // grid.classList.add ('grid')
+    // section.appendChild(grid)
     for (let i = 1; i < this.rows + 1; i++) {
       for (let j = 1; j < this.columns + 1; j++) {
         // create a div and add it to cells[], adding an Id too
@@ -24,9 +25,10 @@ class Board {
         cell.classList.add('cell')
         grid.appendChild(cell)
         this.cells.push(cell)
-        cell.innerHTML = cellID
+        // cell.innerHTML = cellID
         cell.style.width = `${100 / this.width}%`
         cell.style.height = `${100 / this.width}%`
+        // cell.backgroundImage = '.images/waterTile1.png'
       }
     }
     // console.log(this.cells)
@@ -60,7 +62,7 @@ class Ship {
     }
     // checking for collisions with wall
     const cellCoordsSlpit = this.bodyCells.toString().split(',')
-    console.log('cell body split: ' + cellCoordsSlpit)
+    // console.log('cell body split: ' + cellCoordsSlpit)
     const outOfBounds = cellCoordsSlpit.some((cell) => {
       return (cell > 10 || cell < 1)              // checking array to see if any cells are out of bounds
     })
@@ -83,9 +85,9 @@ class Ship {
       }
       //decreaseDisplayCounter(this.bodyCells)                                    
       this.bodyCells.forEach((block) => {        // adding body cells to HTML to be visualised
+        fullCells.push(block)                    // adding cells to 'full' array -- they are not taken up by ships
         const cell = document.getElementById(block)
         cell.classList.add('ship')
-        fullCells.push(block)                    // adding cells to 'full' array -- they are not taken up by ships
         console.log('adding ship: ' + this.name + ' to ' + position + ' rotation: ' + this.rotation)
       })
     } else {
@@ -94,23 +96,41 @@ class Ship {
     }
     // console.log(this.bodyCells)
     // console.log(arrayOfFullCells)
-    console.log(collision)
+    // console.log(collision)
   }
 
-  shipHit(cellId) {                     // gets called when the ship is hit
+  shipHit(cellId) {                             // gets called when the ship is hit
     console.log('ship: ' + this.name + ' has been hit!')
     this.lives --
     const cell = document.getElementById(cellId)
-    cell.classList.add('hit')
+    cell.classList.add('hit')                  // add hit class to cell 
+    if (playerOneTurn === true) {              // change player lives accordingly
+      playerOneLives --
+    } else {
+      playerTwoLives --
+    }
+    const livesOne = document.querySelector('.playerOneLivesNum')      // update lives in HTML
+    livesOne.innerHTML = playerOneLives
+    const livesTwo = document.querySelector('.playerTwoLivesNum')      // update lives in HTML
+    livesTwo.innerHTML = playerTwoLives
   }
 }
 
-// ----------------------------------------------------------STAGING PHASE------------------------------------------------------------------------------ //
+// ----------------------------------------------------------SET UP------------------------------------------------------------------------------ //
 
 const boardOne = new Board(10, 10, 10, 1)           // create two board objects
 const boardTwo = new Board(10, 10, 10, 2)
-boardOne.display()                               // display the two boards
+boardOne.display()                           // display the two boards
 boardTwo.display()
+
+const zAxisBlocker1 = document.createElement('div')  // create a blocker for alternating turns
+const zAxisBlocker2 = document.createElement('div')
+const grid1 = document.querySelector('#grid1')
+const grid2 = document.querySelector('#grid2')
+grid1.appendChild(zAxisBlocker1)             // add blocker to computers board (board that player attacks on)
+grid2.appendChild(zAxisBlocker2)
+zAxisBlocker1.classList.add('zAxisOff')      // adding z axis class to blocker (starts in off state)
+zAxisBlocker2.classList.add('zAxisOff')
 
 const carrier1 = new Ship(5, 'Carrier1', 1)                // creating ships
 const battleship1 = new Ship(4, 'Battleship1', 1)    
@@ -128,25 +148,72 @@ const submarineTwo2 = new Ship(2, 'Submarine2', 2)
 const patrolBoatOne2 = new Ship(2, 'Patrol Boat2', 2)
 const patrolBoatTwo2 = new Ship(2, 'Patrol Boat2', 2)
 
-const fullCells = []
+let fullCells = []
+let unavailableCells = []
 const arrayOfShips1 = []
-const arrayOfShips2 = []                
-// arrayOfShips1.push(carrier1, battleship1, destroyer1, submarineOne1, submarineTwo1, patrolBoatOne1, patrolBoatTwo1)  // adding test ships to array
-// arrayOfShips2.push(carrier2, battleship2, destroyer2, submarineOne2, submarineTwo2, patrolBoatOne2, patrolBoatTwo2)  // two arrays for each board
-arrayOfShips1.push(carrier1)            // shorter array for testing
-arrayOfShips2.push(carrier2)            // shorter array for testing
+const arrayOfShips2 = []  
 
-const gameState = 0
+//arrayOfShips1.push(submarineOne1)            // shorter array for testing
+//arrayOfShips2.push(submarineOne2)            // shorter array for testing      
+arrayOfShips1.push(carrier1, battleship1, destroyer1, submarineOne1, submarineTwo1, patrolBoatOne1, patrolBoatTwo1)  // adding test ships to array
+arrayOfShips2.push(carrier2, battleship2, destroyer2, submarineOne2, submarineTwo2, patrolBoatOne2, patrolBoatTwo2)  // two arrays for each board
+
+function playerLives(array) {                           // function to find player lives from ship types
+  const typeArray = []
+  array.forEach((ship) => {
+    typeArray.push(ship.type)
+  })
+  return typeArray.reduce((acc, type) => {
+    return acc + type
+  }, 0)
+}
+
+let gameState = 0
 let playerOneTurn = true         
 let playerTwoTurn = false
+let playerOneLives = playerLives(arrayOfShips1)                       // player lives = sum of all ship types
+let playerTwoLives = playerLives(arrayOfShips2)
+const livesOne = document.querySelector('.playerOneLivesNum')
+const livesTwo = document.querySelector('.playerTwoLivesNum')
 
 let displayCounter1 = arrayOfShips1.length-1
 let displayCounter2 = arrayOfShips2.length-1
 
-const rotateButton1 = document.getElementById('rotate1')     // rotate ship button board one
-const rotateButton2 = document.getElementById('rotate2')     // rotate ship button board two
-const nextTurnButton = document.querySelector('.nextTurnButton') // submit button
-const attackPhaseButton = document.querySelector('.attackPhase')
+const rotateButton1 = document.getElementById('rotate1')              // rotate ship button board one
+const rotateButton2 = document.getElementById('rotate2')              // rotate ship button board two
+const nextTurnButton = document.querySelector('.nextTurnButton')      // submit button
+const attackPhaseButton = document.querySelector('.attackPhase')      // next phase button
+const resetButton = document.querySelector('.resetButton')
+
+function setUp() {                  // -------------------- function to reset/set up game ------------------ //
+  gameState = 0
+  console.log('game set up')
+  //zAxisBlocker.classList.add('zAxisOn')      // turns zAxis blocker on
+  displayCounter1 = arrayOfShips1.length-1
+  displayCounter2 = arrayOfShips2.length-1
+  playerOneLives = playerLives(arrayOfShips1)        // player lives = sum of all ship types
+  playerTwoLives = playerLives(arrayOfShips2)
+  livesOne.innerHTML = playerOneLives                // initialising lives on page start up
+  livesTwo.innerHTML = playerTwoLives
+  fullCells = []                                     // empty full cells array
+  unavailableCells = []
+  boardOne.cells.forEach((cell) => {                // clearing each cell
+    cell.className = ''
+    cell.classList.add('cell')
+  })
+  boardTwo.cells.forEach((cell) => {
+    cell.className = ''
+    cell.classList.add('cell')
+  })
+  const fullShipArray = arrayOfShips1.concat(arrayOfShips2)
+  fullShipArray.forEach((ship) => {
+    ship.bodyCells = []
+  })
+  removeHover(boardOne)
+  removeHover(boardTwo)  
+  stagePhase(boardOne)                         // ----------- STAGE PHASE call -------- //
+  computerStage()
+}
 
 rotateButton1.addEventListener('click', () => {              
   rotateShips(1)
@@ -155,12 +222,19 @@ rotateButton2.addEventListener('click', () => {
   rotateShips(2)
 })
 attackPhaseButton.addEventListener('click', () => {
+  gameState = 1
   attackPhase()
+})
+resetButton.addEventListener('click', () => {
+  console.log('resetting boards')
+  setUp()
 })
 // nextTurnButton.addEventListener('click', () => {
 //   stagePhase(boardTwo)
 // })
-function rotateShips(board) {
+setUp()
+
+function rotateShips(board) {                      // function for rotating ships
   if (board === 1) {
     console.log('rotating ship on board 1')
     arrayOfShips1[displayCounter1].rotation = !arrayOfShips1[displayCounter1].rotation
@@ -170,12 +244,14 @@ function rotateShips(board) {
   }
 }
 
+// ----------------------------------------------------------STAGING PHASE------------------------------------------------------------------------------ //
 
 function stagePhase(board) {                           // stage phase function
   console.log(board)
   board.cells.forEach((cell) => {
-    console.log('added eventlistener to cell: ' + cell.id)
-    cell.addEventListener('click', () => {            // add eventlistener to each cell in certain board
+    const domCell = document.getElementById(cell.id)
+    // console.log('added eventlistener to cell: ' + cell.id)
+    domCell.addEventListener('click', () => {         // add eventlistener to each cell in certain board
       console.log('cell selected: ' + cell.id)
       selectShip(cell.id, board)                      // select ship from array
     })
@@ -200,62 +276,74 @@ function stagePhase(board) {                           // stage phase function
   }
 }
 
-//function decreaseDisplayCounter(shipPosition) {
-  // shipPositionArray = shipPosition.join(',').split(',')
-  // shipBoard = shipPositionArray[0]
-  // if (parseInt(shipBoard) === 1) {
-  //   displayCounter1 --
-  // } else if (parseInt(shipBoard) === 2){
-  //   displayCounter2 --
-  // }
-//}
+// ---------------------------------------------------------COMPUTER STAGE PHASE------------------------------------------------------------- //
 
-stagePhase(boardOne)
-stagePhase(boardTwo)
+
+function computerStage() {
+  console.log('computer attempting to place ship') 
+  let availableCells = []
+  boardTwo.cells.forEach((cell) => availableCells.push(cell))                              // creating array of available cells for placement 
+  const randomNum = Math.round(Math.random() * (availableCells.length - 1))
+  console.log('random number ' + randomNum)
+  const randomCell = availableCells[randomNum]                                             // randomly select a cell from available cells array
+  const randomCellId = randomCell.id
+  // console.log(randomCellId)
+  const randomRotation = Math.round(Math.random() * 1) + 1                                 // add random rotation here
+  rotateShips(randomRotation)
+  arrayOfShips2[displayCounter2].display(randomCellId)                                     // display ship as normal
+  console.log(randomCell) 
+  availableCells = availableCells.filter((cell) => {                                       // filter random cell from available cells
+    return cell !== randomCell
+  })
+  // console.log(randomCell)
+  console.log(availableCells.length)
+  while (displayCounter2 >= 0) {                                                           // repeat this process until all ships are placed
+    computerStage()
+  }
+}
+
 
 // ------------------------------------------------------------ATTACK PHASE------------------------------------------------------------------ //
 
-const unavailableCells = []
-
-function removeEventListeners(board) {                   // removing eventlistener from each cell in certain board
+function removeEventListeners(board) {                       // removing eventlistener from each cell in certain board
   board.cells.forEach((cell) => {
-    console.log('removing eventlistener for cell: ' + cell.id)
-    cell.removeEventListener('click', () => {            // removing eventlistener from each cell in certain board
+    const domCell = document.getElementById(cell.id)
+    // console.log('removing eventlistener for cell: ' + cell.id)
+    domCell.removeEventListener('click', () => {             // removing eventlistener from each cell in certain board
       // console.log('cell selected: ' + cell.id)
       selectShip(cell.id, board)                    
     })
   })
-  // const listeners = window.getEventListeners(document.body)      // list all event listeners?
-  // Object.keys(listeners).forEach(event => {
-  //   console.log(event, listeners[event]);
-// });
 }
 
-function attackPhase() {                                   // attack phase start function
-  if (displayCounter1 < 0 && displayCounter2 < 0) {        // checks wether all ships have been placed
+function attackPhase() {                                                        // attack phase start function
+  if (displayCounter1 < 0 && displayCounter2 < 0 && (gameState === 1)) {        // checks wether all ships have been placed
     console.log('Attack time!')
-    removeEventListeners(boardOne)                         // removes eventlisteners from staging phase
+    removeEventListeners(boardOne)                                              // removes eventlisteners from staging phase
     removeEventListeners(boardTwo)
+    //addHoverAndAttack(boardOne) 
+    addHoverAndAttack(boardTwo) 
     attackTurns()
   } else {
     console.log('Not all ships placed yet!')
   }
 }
 
-function removeHover(board) {                
+function removeHover(board) {                       // function REMOVES HOVERR class from tiles      
   board.cells.forEach((cell) => {
     cell.classList.remove('hover')
   })
 }
 
-function addHover(board) {                                              // hover/attack function for each cell in specific board
+function addHoverAndAttack(board) {                                              // hover/attack function for each cell in specific board
   board.cells.forEach((cell) => {
-    cell.addEventListener('mouseover', () => {
-      removeHover(board)                                                // reset board first
-      const cellOnBoard = document.getElementById(cell.id)  
-      // console.log('hovering over cell: ' + cell.id)
-      cellOnBoard.classList.add('hover')                                // add hover class to cell
-    })
+    cell.classList.add('hover')
+    // cell.addEventListener('mouseover', () => {
+    //   // removeHover(board)                                                // reset board first
+    //   const cellOnBoard = document.getElementById(cell.id)  
+    //   // console.log('hovering over cell: ' + cell.id)
+    //   cellOnBoard.classList.add('hover')                                // add hover class to cell
+    // })
     cell.addEventListener('click', function() {attackCheck(cell.id)})   // add attack listener
   })
 }
@@ -263,6 +351,8 @@ function addHover(board) {                                              // hover
 function attackCheck(cellId) {
   if (!unavailableCells.includes(cellId)) {     // check if cell has been attacked already (if it has, it will be in unavailableCells array)
     unavailableCells.push(cellId)
+    playerOneTurn = !playerOneTurn
+    playerTwoTurn = !playerTwoTurn
     // console.log(unavailableCells)
     // console.log('cell: ' + cellId + ' attacked!')
     if (fullCells.includes(cellId)) {          // if player attacks cell that is in full cell array, it is a hit! 
@@ -280,27 +370,48 @@ function attackCheck(cellId) {
   } else {
     console.log(unavailableCells)
     console.log('cell already attacked!')
+    attackTurns()
   }
 }
 
 // ---------------------------------------------------------ALTERNATING TURN LOGIC-------------------------------------------------------------- //
 
 function attackTurns() {
-  if (playerOneTurn === true) {
-    addHover(boardTwo)                                     // add hover/attack function to board TWO
-    boardTwo.cells.forEach((cell) => {                     // remove eventlisteners from other board
-      cell.removeEventListener('click', function() {attackCheck(cell.id)})
-    })
-    listEvenListeners()
-    playerOneTurn = false
-    playerTwoTurn = true
-  } else if (playerTwoTurn === true) {
-    addHover(boardOne)                                     // add hover/attack function to board ONE
-    boardOne.cells.forEach((cell) => {                     // remove eventlisteners from other board
-      cell.removeEventListener('click', function() {attackCheck(cell.id)})
-    })
-    playerTwoTrun = false
-    playerOneTurn = true
+  if (playerOneLives === 0 || playerTwoLives === 0) {
+    endGame()
+  } else if (playerOneTurn === true) {                        // check who's turn it is
+    console.log('playerOneturn: ' + playerOneTurn)
+    zAxisBlocker2.classList.remove('zAxisOn')                 // switching blocker on and off between boards
+    zAxisBlocker1.classList.add('zAxisOn')
+    // addHoverAndAttack(boardTwo)                            // add hover/attack function to board TWO
+    // boardOne.cells.forEach((cell) => {                     // remove eventlisteners from other board
+    //   const domCell = document.getElementById(cell.id)
+    //   domCell.removeEventListener('click', function() {attackCheck(cell.id)})
+    // })
+    // playerOneTurn = false
+    // playerTwoTurn = true
+    // console.log('playerOneturn: ' + playerOneTurn)
+  } else if (playerTwoTurn === true) {                        // <==== ----------------COMPUTER'S TURN------------??
+    console.log('player two turn: ' + playerTwoTurn)
+    zAxisBlocker1.classList.remove('zAxisOn')                 // switching blocker on and off between boards
+    zAxisBlocker2.classList.add('zAxisOn')
+    // -----------------------------COMPUTER ATTACK LOGIC HERE------------------------------ //
+    let availableCells = []
+    boardOne.cells.forEach((cell) => availableCells.push(cell))                              // creating array of available cells 
+    const randomNum = Math.round(Math.random() * (availableCells.length - 1))
+    console.log('random number ' + randomNum)
+    const randomCell = availableCells[randomNum]                                             // randomly select a cell from available cells array
+    const randomCellId = randomCell.id
+    attackCheck(randomCellId)
+
+
+    // addHoverAndAttack(boardOne)                            // add hover/attack function to board ONE
+    // boardTwo.cells.forEach((cell) => {                     // remove eventlisteners from other board
+    //   cell.removeEventListener('click', function() {attackCheck(cell.id)})
+    // })
+    // playerTwoTurn = false
+    // playerOneTurn = true
+    // console.log('player two turn: ' + playerTwoTurn)
   }
 }
 
@@ -321,44 +432,17 @@ function findShip(shipArray, cellId) {      // a function to find which ship is 
   }
 }
 
+// ---------------------------------------------------------END GAME----------------------------------------------------------------------------- //
 
-
-// --------------------------------------------------------LIST EVENT-LISTENERS----------------------------------------------------------------- //
-
-function listEvenListeners() {
-  const listeners = (function listAllEventListeners() {
-    let elements = [];
-    const allElements = document.querySelectorAll('*');
-    const types = [];
-    for (let ev in window) {
-      if (/^on/.test(ev)) types[types.length] = ev;
-    }
-  
-    for (let i = 0; i < allElements.length; i++) {
-      const currentElement = allElements[i];
-      for (let j = 0; j < types.length; j++) {
-        if (typeof currentElement[types[j]] === 'function') {
-          elements.push({
-            "node": currentElement,
-            "listeners": [ {
-              "type": types[j],
-              "func": currentElement[types[j]].toString(),
-            }]
-          });
-        }
-      }
-    }
-  
-    return elements.filter(element => element.listeners.length)
-  })();
-  
-  console.log('current event listeners: ' + listeners);
-  
+function endGame() {
+  let winner = ''
+  if (playerOneLives > playerTwoLives) {
+    winner = 'Player one'
+  } else {
+    winner = 'Player two'
+  }
+  console.log('GAME OVER! ' + winner + ' is the winner!')
 }
-
-
-
-
 
 
 

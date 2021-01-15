@@ -29,20 +29,56 @@ section {
   margin: 50px;
 }
 
+.zAxisOff {
+  position: absolute;
+  z-index: -2;
+  background-color: transparent;
+  width: 600px;
+  height: 600px;
+  border: 4px solid red;
+}
+
+.zAxisOn {
+  z-index: 1;
+}
+
 .cell {
-  border: 1px solid green;
-  background-color: lightblue;
-  font-size: 15px;
+  /* border: 1px solid green; */
+  /* background-color: rgb(78, 202, 243); */
+  background-image: url('./images/waterTile2.png');
+  background-size: cover;
+  /* z-index: -1; */
+  font-size: 11px;
 }
 
 .ship {
   background-color: grey;
+  background-image: none;
 }
+
+/* .ship:hover {
+  background-color: rgb(218, 218, 218);
+} */
 
 aside {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+}
+
+.leftAside {
+  background-color: teal;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 200px;
+}
+
+.lives {
+  background-color: tomato;
+  width: 180px;
+  height: 400px;
 }
 
 .rotateButton {
@@ -58,16 +94,20 @@ aside {
   margin-top: 50px;
 }
 
-.hover {
+.hover:hover {
+  opacity: 0.5;
   background-color: greenyellow;
 }
 
 .hit {
   background-color: orange;
+  background-image: none;
 }
 
 .miss {
-  background-color: darkblue;
+  background-color: rgb(111, 186, 199);
+  background-image: url('./images/missTile2.png');
+  background-size: cover;
 }
 
 #rotate1 {

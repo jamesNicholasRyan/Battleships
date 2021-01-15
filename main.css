@@ -31,6 +31,7 @@ section {
 
 .cell {
   border: 1px solid green;
+  background-color: lightblue;
   font-size: 15px;
 }
 
@@ -59,6 +60,14 @@ aside {
 
 .hover {
   background-color: greenyellow;
+}
+
+.hit {
+  background-color: orange;
+}
+
+.miss {
+  background-color: darkblue;
 }
 
 #rotate1 {

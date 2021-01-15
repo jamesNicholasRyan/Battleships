@@ -7,7 +7,7 @@ class Board {
     this.width = width
     this.cells = []
     this.boardNum = boardNum
-    this.displayCounter = 6
+    // this.displayCounter = 6
   }
 
   display() {
@@ -33,7 +33,7 @@ class Board {
   }
 }
 
-// ---------------------------------------------------------------------------------------------------------------------------------------------- //
+// --------------------------------------------------------------SHIP CLASS------------------------------------------------------------------------ //
 
 class Ship {
   constructor(type, name, board) {
@@ -96,43 +96,52 @@ class Ship {
     // console.log(arrayOfFullCells)
     console.log(collision)
   }
+
+  shipHit(cellId) {                     // gets called when the ship is hit
+    console.log('ship: ' + this.name + ' has been hit!')
+    this.lives --
+    const cell = document.getElementById(cellId)
+    cell.classList.add('hit')
+  }
 }
 
-// ------------------------------------------------------------------------------------------------------------------------------------------ //
+// ----------------------------------------------------------STAGING PHASE------------------------------------------------------------------------------ //
 
 const boardOne = new Board(10, 10, 10, 1)           // create two board objects
 const boardTwo = new Board(10, 10, 10, 2)
 boardOne.display()                               // display the two boards
 boardTwo.display()
 
-const carrier1 = new Ship(5, 'Carrier', 1)                // creating ships
-const battleship1 = new Ship(4, 'Battleship', 1)    
-const destroyer1 = new Ship(3, 'Destroyer', 1)
-const submarineOne1 = new Ship(2, 'Submarine', 1)
-const submarineTwo1 = new Ship(2, 'Submarine', 1)
-const patrolBoatOne1 = new Ship(2, 'Patrol Boat', 1)
-const patrolBoatTwo1 = new Ship(2, 'Patrol Boat', 1)
+const carrier1 = new Ship(5, 'Carrier1', 1)                // creating ships
+const battleship1 = new Ship(4, 'Battleship1', 1)    
+const destroyer1 = new Ship(3, 'Destroyer1', 1)
+const submarineOne1 = new Ship(2, 'Submarine1', 1)
+const submarineTwo1 = new Ship(2, 'Submarine1', 1)
+const patrolBoatOne1 = new Ship(2, 'Patrol Boat1', 1)
+const patrolBoatTwo1 = new Ship(2, 'Patrol Boat1', 1)
 
-const carrier2 = new Ship(5, 'Carrier', 2)           
-const battleship2 = new Ship(4, 'Battleship', 2)    
-const destroyer2 = new Ship(3, 'Destroyer', 2)
-const submarineOne2 = new Ship(2, 'Submarine', 2)
-const submarineTwo2 = new Ship(2, 'Submarine', 2)
-const patrolBoatOne2 = new Ship(2, 'Patrol Boat', 2)
-const patrolBoatTwo2 = new Ship(2, 'Patrol Boat', 2)
+const carrier2 = new Ship(5, 'Carrier2', 2)           
+const battleship2 = new Ship(4, 'Battleship2', 2)    
+const destroyer2 = new Ship(3, 'Destroyer2', 2)
+const submarineOne2 = new Ship(2, 'Submarine2', 2)
+const submarineTwo2 = new Ship(2, 'Submarine2', 2)
+const patrolBoatOne2 = new Ship(2, 'Patrol Boat2', 2)
+const patrolBoatTwo2 = new Ship(2, 'Patrol Boat2', 2)
 
 const fullCells = []
 const arrayOfShips1 = []
 const arrayOfShips2 = []                
-arrayOfShips1.push(carrier1, battleship1, destroyer1, submarineOne1, submarineTwo1, patrolBoatOne1, patrolBoatTwo1)  // adding test ships to array
-arrayOfShips2.push(carrier2, battleship2, destroyer2, submarineOne2, submarineTwo2, patrolBoatOne2, patrolBoatTwo2)  // two arrays for each board
+// arrayOfShips1.push(carrier1, battleship1, destroyer1, submarineOne1, submarineTwo1, patrolBoatOne1, patrolBoatTwo1)  // adding test ships to array
+// arrayOfShips2.push(carrier2, battleship2, destroyer2, submarineOne2, submarineTwo2, patrolBoatOne2, patrolBoatTwo2)  // two arrays for each board
+arrayOfShips1.push(carrier1)            // shorter array for testing
+arrayOfShips2.push(carrier2)            // shorter array for testing
 
 const gameState = 0
 let playerOneTurn = true         
-let playerTwoTrun = false
+let playerTwoTurn = false
 
-let displayCounter1 = 6
-let displayCounter2 = 6
+let displayCounter1 = arrayOfShips1.length-1
+let displayCounter2 = arrayOfShips2.length-1
 
 const rotateButton1 = document.getElementById('rotate1')     // rotate ship button board one
 const rotateButton2 = document.getElementById('rotate2')     // rotate ship button board two
@@ -163,6 +172,15 @@ function rotateShips(board) {
 
 
 function stagePhase(board) {                           // stage phase function
+  console.log(board)
+  board.cells.forEach((cell) => {
+    console.log('added eventlistener to cell: ' + cell.id)
+    cell.addEventListener('click', () => {            // add eventlistener to each cell in certain board
+      console.log('cell selected: ' + cell.id)
+      selectShip(cell.id, board)                      // select ship from array
+    })
+  })
+
   function selectShip(cellId, board) {
     if (board.boardNum === 1) {                       // checking which board the ships are being placed on
       displayCounter = displayCounter1                // board one uses ship array 1, and display counter 1
@@ -180,16 +198,6 @@ function stagePhase(board) {                           // stage phase function
       console.log('no more ships left!')
     }
   }
-  //function addEventListeners(board) {
-    console.log(board)
-    board.cells.forEach((cell) => {
-      console.log('added eventlistener to cell: ' + cell.id)
-      cell.addEventListener('click', () => {            // add eventlistener to each cell in certain board
-        console.log('cell selected: ' + cell.id)
-        selectShip(cell.id, board)                      // select ship from array
-      })
-    })
-  //}
 }
 
 //function decreaseDisplayCounter(shipPosition) {
@@ -205,49 +213,148 @@ function stagePhase(board) {                           // stage phase function
 stagePhase(boardOne)
 stagePhase(boardTwo)
 
+// ------------------------------------------------------------ATTACK PHASE------------------------------------------------------------------ //
+
+const unavailableCells = []
+
 function removeEventListeners(board) {                   // removing eventlistener from each cell in certain board
   board.cells.forEach((cell) => {
     console.log('removing eventlistener for cell: ' + cell.id)
     cell.removeEventListener('click', () => {            // removing eventlistener from each cell in certain board
-      console.log('cell selected: ' + cell.id)
+      // console.log('cell selected: ' + cell.id)
       selectShip(cell.id, board)                    
     })
   })
-  // const listeners = window.getEventListeners(document.body)
+  // const listeners = window.getEventListeners(document.body)      // list all event listeners?
   // Object.keys(listeners).forEach(event => {
   //   console.log(event, listeners[event]);
 // });
 }
 
-function attackPhase() {                                // attack phase start function
-  if (displayCounter1 <= 0 && displayCounter2 <= 0) {      // checks wether all ships have been placed
+function attackPhase() {                                   // attack phase start function
+  if (displayCounter1 < 0 && displayCounter2 < 0) {        // checks wether all ships have been placed
     console.log('Attack time!')
     removeEventListeners(boardOne)                         // removes eventlisteners from staging phase
     removeEventListeners(boardTwo)
-    addHover(boardOne)                                    // add hover function to board
+    attackTurns()
   } else {
     console.log('Not all ships placed yet!')
   }
 }
 
-function removeHover(board) {
+function removeHover(board) {                
   board.cells.forEach((cell) => {
     cell.classList.remove('hover')
   })
 }
 
-function addHover(board) {                     // hover function for each cell in specific board
+function addHover(board) {                                              // hover/attack function for each cell in specific board
   board.cells.forEach((cell) => {
     cell.addEventListener('mouseover', () => {
-      removeHover(board)                              // reset board first
+      removeHover(board)                                                // reset board first
       const cellOnBoard = document.getElementById(cell.id)  
-      console.log('hovering over cell: ' + cell.id)
-      cellOnBoard.classList.add('hover')            // add hover class to cell
-      console.log(cellOnBoard.classList)
+      // console.log('hovering over cell: ' + cell.id)
+      cellOnBoard.classList.add('hover')                                // add hover class to cell
     })
+    cell.addEventListener('click', function() {attackCheck(cell.id)})   // add attack listener
   })
 }
 
+function attackCheck(cellId) {
+  if (!unavailableCells.includes(cellId)) {     // check if cell has been attacked already (if it has, it will be in unavailableCells array)
+    unavailableCells.push(cellId)
+    // console.log(unavailableCells)
+    // console.log('cell: ' + cellId + ' attacked!')
+    if (fullCells.includes(cellId)) {          // if player attacks cell that is in full cell array, it is a hit! 
+      console.log('SHIP HIT!!')
+      const fullShipArray = arrayOfShips1.concat(arrayOfShips2)    // make an array of ALL ships (to check)
+      const hitShip = findShip(fullShipArray, cellId)              // check both arrays to find ship that was hit
+      hitShip.shipHit(cellId)                                      // call shipHit method in ship class
+      attackTurns()                                                // call next turn
+    } else {
+      console.log('MISS!!')
+      const cell = document.getElementById(cellId)
+      cell.classList.add('miss')
+      attackTurns()
+    }
+  } else {
+    console.log(unavailableCells)
+    console.log('cell already attacked!')
+  }
+}
+
+// ---------------------------------------------------------ALTERNATING TURN LOGIC-------------------------------------------------------------- //
+
+function attackTurns() {
+  if (playerOneTurn === true) {
+    addHover(boardTwo)                                     // add hover/attack function to board TWO
+    boardTwo.cells.forEach((cell) => {                     // remove eventlisteners from other board
+      cell.removeEventListener('click', function() {attackCheck(cell.id)})
+    })
+    listEvenListeners()
+    playerOneTurn = false
+    playerTwoTurn = true
+  } else if (playerTwoTurn === true) {
+    addHover(boardOne)                                     // add hover/attack function to board ONE
+    boardOne.cells.forEach((cell) => {                     // remove eventlisteners from other board
+      cell.removeEventListener('click', function() {attackCheck(cell.id)})
+    })
+    playerTwoTrun = false
+    playerOneTurn = true
+  }
+}
+
+// -----------------------------------------------------------FIND SHIP FUNCTION----------------------------------------------------------------- //
+
+function findShip(shipArray, cellId) {      // a function to find which ship is being actioned on
+  let foundShip = ''
+  shipArray.forEach((ship) => {
+    if (ship.bodyCells.some((cell) => cell === cellId)) {       // search every ship and look for actioned cell
+      foundShip = ship
+    } else {
+      console.log('no match found')
+    }
+  })
+  console.log('match found: ' + foundShip)
+  if (foundShip !== '') {                    // if a ship is found, return that ship
+    return foundShip
+  }
+}
+
+
+
+// --------------------------------------------------------LIST EVENT-LISTENERS----------------------------------------------------------------- //
+
+function listEvenListeners() {
+  const listeners = (function listAllEventListeners() {
+    let elements = [];
+    const allElements = document.querySelectorAll('*');
+    const types = [];
+    for (let ev in window) {
+      if (/^on/.test(ev)) types[types.length] = ev;
+    }
+  
+    for (let i = 0; i < allElements.length; i++) {
+      const currentElement = allElements[i];
+      for (let j = 0; j < types.length; j++) {
+        if (typeof currentElement[types[j]] === 'function') {
+          elements.push({
+            "node": currentElement,
+            "listeners": [ {
+              "type": types[j],
+              "func": currentElement[types[j]].toString(),
+            }]
+          });
+        }
+      }
+    }
+  
+    return elements.filter(element => element.listeners.length)
+  })();
+  
+  console.log('current event listeners: ' + listeners);
+  
+}
 
 
 

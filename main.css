@@ -104,31 +104,62 @@ aside {
   flex-grow: 1;
 }
 
-.submarine1 {
-  background-image: url('./images/submarine1.png');
-  background-size: cover;
-}
-
-.submarine2 {
-  background-image: url('./images/submarine2.png');
-  background-size: cover;
-}
-
-.submarine3 {
-  background-image: url('./images/submarine3.png');
-  background-size: cover;
-}
-
 .patrolBoat1 {
   background-image: url('./images/patrolBoat1.png');
   background-size: cover;
 }
-
 .patrolBoat2 {
   background-image: url('./images/patrolBoat2.png');
   background-size: cover;
 }
 
+.submarine1 {
+  background-image: url('./images/submarine1.png');
+  background-size: cover;
+}
+.submarine2 {
+  background-image: url('./images/submarine2.png');
+  background-size: cover;
+}
+.submarine3 {
+  background-image: url('./images/submarine3.png');
+  background-size: cover;
+}
+
+.destroyer1 {
+  background-image: url('./images/destroyer1.png');
+  background-size: cover;
+}
+.destroyer2 {
+  background-image: url('./images/destroyer2.png');
+  background-size: cover;
+}
+.destroyer3 {
+  background-image: url('./images/destroyer3.png');
+  background-size: cover;
+}
+
+.battleship1 {
+  background-image: url('./images/battleship1.png');
+  background-size: cover;
+}
+.battleship2 {
+  background-image: url('./images/battleship2.png');
+  background-size: cover;
+}
+.battleship3 {
+  background-image: url('./images/battleship3.png');
+  background-size: cover;
+}
+.battleship4 {
+  background-image: url('./images/battleship4.png');
+  background-size: cover;
+}
+
+.rotate {
+  transform: rotate(90deg);
+  background-size: cover;
+}
 
 .hover:hover {
   opacity: 0.5;

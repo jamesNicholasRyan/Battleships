@@ -93,7 +93,10 @@ class Ship {
           counter ++
           const cell = document.getElementById(block)      // adding body cells to HTML to be visualised (only if they are Human's ships)
           cell.classList.add(partName) 
-          cell.classList.add('ship')                      
+          cell.classList.add('ship')
+          if (this.rotation === true) {                    // rotate cell/image if ship is rotated
+            cell.classList.add('rotate')
+          }                     
         }
         console.log('adding ship: ' + this.name + ' to ' + position + ' rotation: ' + this.rotation)
       })

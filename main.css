@@ -47,14 +47,14 @@ section {
 .cell {
   /* border: 1px solid green; */
   /* background-color: rgb(78, 202, 243); */
-  background-image: url('./images/waterTile2.png');
+  background-image: url('./images/seaTile1.png');
   background-size: cover;
   /* z-index: -1; */
   font-size: 11px;
 }
 
 .ship {
-  background-color: grey;
+  /* background-color: grey; */
   background-image: none;
 }
 
@@ -96,6 +96,40 @@ aside {
   margin-top: 50px;
 }
 
+#rotate1 {
+  flex-grow: 1;
+}
+
+#rotate2 {
+  flex-grow: 1;
+}
+
+.submarine1 {
+  background-image: url('./images/submarine1.png');
+  background-size: cover;
+}
+
+.submarine2 {
+  background-image: url('./images/submarine2.png');
+  background-size: cover;
+}
+
+.submarine3 {
+  background-image: url('./images/submarine3.png');
+  background-size: cover;
+}
+
+.patrolBoat1 {
+  background-image: url('./images/patrolBoat1.png');
+  background-size: cover;
+}
+
+.patrolBoat2 {
+  background-image: url('./images/patrolBoat2.png');
+  background-size: cover;
+}
+
+
 .hover:hover {
   opacity: 0.5;
   background-color: greenyellow;
@@ -108,14 +142,6 @@ aside {
 
 .miss {
   background-color: rgb(111, 186, 199);
-  background-image: url('./images/missTile2.png');
+  background-image: url('./images/missTile1.png');
   background-size: cover;
-}
-
-#rotate1 {
-  flex-grow: 1;
-}
-
-#rotate2 {
-  flex-grow: 1;
 }

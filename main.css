@@ -62,15 +62,18 @@ main {
   flex-direction: row;
   flex-wrap: wrap;
   /* border: 1px solid green; */
+  background-color: white;
   width: 600px;
   height: 600px;
   margin: 5px;
-  border-radius: 100px;
 }
 
 #grid2 {
+  background-color: black;
   background-image: url('./images/radarBackground.png');
   background-size: cover;
+  border-radius: 100px;
+  /* opacity: 0.7; */
 }
 
 .zAxisOff {
@@ -96,9 +99,27 @@ main {
 }
 
 .blackCell {
+  /* background-color: rgb(9, 3, 122); */
   background-color: black;
   opacity: 0.7;
   border: 1px dotted lime;
+}
+
+.radarMiss {
+  /* background-color: rgb(11, 0, 255); */
+  background-color:rgb(11, 0, 255);
+  background: transparent;
+  background-image: url('./images/radarMiss.png');
+  background-size: cover;
+  opacity: none;
+}
+
+.radarHit {
+  /* background-color: rgb(11, 0, 255); */
+  background: transparent;
+  background-image: url('./images/radarHit.png');
+  background-size: cover;
+  opacity: 1;
 }
 
 .ship {
@@ -131,9 +152,15 @@ aside {
   width: 100px;
   height: 100px;
   border-radius: 50px;
-  background-color: green;
+  /* background-color: green; */
   margin: 10px;
   margin-bottom: 30px;
+  background-image: url('./images/turnOffLight.png');
+  background-size: cover;
+}
+
+.lightOn {
+  background-image: url('./images/turnOnLight.png')
 }
 
 .shipListTitle {
@@ -150,6 +177,12 @@ aside {
 
 .shipList {
   margin: 10px;
+}
+
+.livesNum {
+  font-size: 40px;
+  text-align: center;
+  margin-top: 10px;
 }
 
 .itemShip {
@@ -187,7 +220,7 @@ aside {
 .carrierOut1, .carrierOut2 {
   height: 30px;
   width: 150px;
-  background-image: url('./images/battleshipOutlineGreen.png');
+  background-image: url('./images/carrierOutlineGreen.png');
   background-size: cover;
 }
 
@@ -283,6 +316,26 @@ aside {
   background-image: url('./images/battleship4.png');
   background-size: cover;
 }
+.carrier1 {
+  background-image: url('./images/carrier1.png');
+  background-size: cover;
+}
+.carrier2 {
+  background-image: url('./images/carrier2.png');
+  background-size: cover;
+}
+.carrier3 {
+  background-image: url('./images/carrier3.png');
+  background-size: cover;
+}
+.carrier4 {
+  background-image: url('./images/carrier4.png');
+  background-size: cover;
+}
+.carrier5 {
+  background-image: url('./images/carrier5.png');
+  background-size: cover;
+}
 
 .rotate {
   transform: rotate(90deg);
@@ -314,3 +367,5 @@ aside {
   background-image: url('./images/missTile1.png');
   background-size: cover;
 }
+
+

@@ -121,6 +121,7 @@ class Ship {
       })
     } else {
       console.log('ship out of bounds!')
+      infoBar.innerHTML = 'SHIP OUT OF BOUNDS'
       this.bodyCells = []                        // emptying body cells array, ready for next placement try
     }
     // console.log(this.bodyCells)
@@ -152,11 +153,13 @@ class Ship {
 
     const cell = document.getElementById(cellId)
     // cell.classList.add('hit')                  // add hit class to cell 
-    flash(cell, 'radarHit', 10)                        // flash function requires: ITEM to flash, CLASS to toggle flash, DURATION of flash
+    // flash(cell, 'radarHit', 10)                        // flash function requires: ITEM to flash, CLASS to toggle flash, DURATION of flash
     if (playerOneTurn === true) {                 // change player lives accordingly
       playerOneLives --
+      flash(cell, 'hit', 10)                        // flash function requires: ITEM to flash, CLASS to toggle flash, DURATION of flash
     } else {
       playerTwoLives --
+      flash(cell, 'radarHit', 10)                        // flash function requires: ITEM to flash, CLASS to toggle flash, DURATION of flash
     }
     const livesOne = document.querySelector('.playerOneLivesNum')      // update lives in HTML
     livesOne.innerHTML = playerOneLives

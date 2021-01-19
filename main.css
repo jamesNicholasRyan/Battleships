@@ -34,7 +34,7 @@ main {
   width: 600px;
   height: 50px;
   line-height: 50px;
-  color: greenyellow;
+  color: lime;
   background-color: black;
   border-radius: 5px;
 }
@@ -43,6 +43,22 @@ main {
   flex-grow: 6;
   display: flex;
   flex-direction: row;
+}
+
+.middleSection {
+  display: flex;
+  flex-direction: row;
+}
+
+.boardNames {
+  text-align: center;
+  background: black;
+  color: lime;
+  font-size: 17px;
+  width: 200px;
+  padding: 5px;
+  border-radius: 2px;
+  margin: 0px 225px;
 }
 
 .lowerSection {
@@ -69,10 +85,11 @@ main {
 }
 
 #grid2 {
-  background-color: black;
-  background-image: url('./images/radarBackground.png');
+  /* background-color: black; */
+  /* background-image: url('./images/radarBackground.png'); */
+  background-image: url('./images/radar2.png');
   background-size: cover;
-  border-radius: 100px;
+  border-radius: 50px;
   /* opacity: 0.7; */
 }
 
@@ -100,8 +117,8 @@ main {
 
 .blackCell {
   /* background-color: rgb(9, 3, 122); */
-  background-color: black;
-  opacity: 0.7;
+  /* background-color: black; */
+  /* opacity: 0.7; */
   border: 1px dotted lime;
 }
 
@@ -139,7 +156,7 @@ aside {
 
 .leftAside, .rightAside {
   background-color: navy;
-  color: limegreen;
+  color: lime;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -354,7 +371,7 @@ aside {
 
 .shipHoverExt {
   opacity: 0.4;
-  background-color: limegreen;
+  background-color: lime;
 }
 
 .hit {

@@ -1,4 +1,6 @@
 const section = document.querySelector('section')
+const infoBar = document.querySelector('.infoText')
+infoBar.innerHTML = 'HELLO WORLD'
 
 class Board {
   constructor(rows, columns, width, boardNum) {
@@ -22,7 +24,13 @@ class Board {
         const cell = document.createElement('div')
         const cellID = this.boardNum + ',' + j + ',' + i + ''
         cell.id = cellID
-        cell.classList.add('cell')
+        if (this.boardNum === 1) {                        // checking which board is being created - black board for board 2
+          cell.classList.add('cell')
+          console.log('board one cells')
+        } else if (this.boardNum === 2) {
+          cell.classList.add('blackCell')
+          console.log('board two cells')
+        }
         grid.appendChild(cell)
         this.cells.push(cell)
         // cell.innerHTML = cellID
@@ -48,7 +56,8 @@ class Ship {
     this.board = board
   }
 
-  display(position) {
+  createBodyCells(position) {                     // creating ship body
+    this.bodyCells = []                           // clearing everytime this function is called, it may be called more than once!
     this.bodyCells.push(position)                 // adding 'body' cells to array ...
     const splitPosition = position.split(',')
     for (let i = 1; i < this.type; i++) {         // loop through this as many times as the ship 'type'
@@ -60,49 +69,59 @@ class Ship {
         this.bodyCells.push(splitPosition.join(','))
       }
     }
-    // checking for collisions with wall
+  }
+
+  display(position, displayType) {
+    this.createBodyCells(position)                 // function for creating ship body above
     const cellCoordsSlpit = this.bodyCells.toString().split(',')
     // console.log('cell body split: ' + cellCoordsSlpit)
     const outOfBounds = cellCoordsSlpit.some((cell) => {
       return (cell > 10 || cell < 1)              // checking array to see if any cells are out of bounds
     })
-    // checking for collisions with OTHER ships
-    // console.log('this.bodyCells: ' + this.bodyCells)
-    // console.log('full cells array: ' + fullCells)
+    console.log('this.bodyCells: ')                   // checking for collisions with OTHER ships
     console.log(this.bodyCells)
-    console.log(fullCells)
     const collision = this.bodyCells.some((shipBlock) => {      // searching through fullCells, comparing to every cell in this.bodyCells
       return fullCells.includes(shipBlock)
     })
-    console.log('colission: ' + collision + ', outOfBounds: ' + outOfBounds)
+    //console.log('colission: ' + collision + ', outOfBounds: ' + outOfBounds)
 
-    if (!outOfBounds && !collision) {            // if ship isn't out of bounds
-      console.log('ship within boundary!')
-      if (this.board === 1) {                              // run a function to decrease board specific display counter too display next ship in array
-        displayCounter1 --
-      } else if (this.board === 2){                        // display next ship in array
-        displayCounter2 --
-      }
-      //decreaseDisplayCounter(this.bodyCells)  
-      let counter = 1                                  
-      this.bodyCells.forEach((block) => {        
-        fullCells.push(block)                              // adding cells to 'full' array -- they are not taken up by ships
-        if (this.board === 1) {
-          const partName = this.name + counter            // creating class name according to ship type & length
-          console.log(partName)
-          counter ++
-          const cell = document.getElementById(block)      // adding body cells to HTML to be visualised (only if they are Human's ships)
-          cell.classList.add(partName) 
-          cell.classList.add('ship')
-          if (this.rotation === true) {                    // rotate cell/image if ship is rotated
-            cell.classList.add('rotate')
-          }                     
+    if (!outOfBounds && !collision) {                      // if ship isn't out of bounds
+      //console.log('ship within boundary!')
+      if (displayType === 'placement') {                     // if display type = placement, decrement displaycounter
+        if (this.board === 1) {                              // run a function to decrease board specific display counter too display next ship in array
+          displayCounter1 --
+          const capitalisedName = this.name.toUpperCase()
+          infoBar.innerHTML = `PLACED: ${capitalisedName}`   // annouce ship that has been placed
+        } else if (this.board === 2){                        // display next ship in array
+          displayCounter2 --
         }
-        console.log('adding ship: ' + this.name + ' to ' + position + ' rotation: ' + this.rotation)
+      }
+
+      let counter = 1                                  
+      this.bodyCells.forEach((block) => { 
+        if (displayType === 'placement') {                   // check if ship is being placed or hover display       
+          fullCells.push(block)                              // adding cells to 'full' array -- they are not taken up by ships
+          if (this.board === 1) {
+            const partName = this.name + counter             // creating class name according to ship type & length
+            //console.log(partName)
+            counter ++
+            const cell = document.getElementById(block)      // adding body cells to HTML to be visualised (only if they are Human's ships)
+            cell.classList.add(partName)                     // visual CSS variable here
+            cell.classList.add('ship')                       // used for attacking functions later!
+            if (this.rotation === true) {                    // rotate cell/image if ship is rotated
+              cell.classList.add('rotate')
+            }         
+          }
+        } else if (displayType === 'hover') {              // -------------- HOVER DISPLAY HERE!! ----------------- //
+          console.log('hover display!')
+          const cell = document.getElementById(block)      // adding body cells to HTML to be visualised for HOVER ONLY HERE!!
+          cell.classList.add('shipHoverExt')               // adding hover CSS class to cells
+        }
+        //console.log('adding ship: ' + this.name + ' to ' + position + ' rotation: ' + this.rotation)
       })
     } else {
       console.log('ship out of bounds!')
-      this.bodyCells = []                        // emptying array, ready for next placement try
+      this.bodyCells = []                        // emptying body cells array, ready for next placement try
     }
     // console.log(this.bodyCells)
     // console.log(arrayOfFullCells)
@@ -110,19 +129,40 @@ class Ship {
   }
 
   shipHit(cellId) {                             // gets called when the ship is hit
-    console.log('ship: ' + this.name + ' has been hit!')
+    //console.log('ship: ' + this.name + ' has been hit!')
     this.lives --
+    if (this.lives === 0) {                         // when ship is completely sunk...
+      const shipName = this.name.toUpperCase()
+      if (this.board === 1) {
+        infoBar.innerHTML = `YOUR ${shipName} HAS BEEN SUNK!`              // indicate when your ship has sunk
+      } else if (this.board === 2) {
+        infoBar.innerHTML = `COMPUTER ${shipName} HAS BEEN SUNK!`          // indicate when computer ship has sunk
+      }
+      const shipId = this.name + this.board
+      const outlineClass = this.name + 'Out' + this.board
+      console.log(outlineClass)
+      const shipItem = document.getElementById(shipId)
+      const outline = document.querySelector(`.${outlineClass}`)
+      console.log(outline)
+      shipItem.classList.add('red')
+      const redOutlineClass = `${this.name}Red`
+      console.log('outline class: ' + redOutlineClass)
+      flash(outline, redOutlineClass, 15, 400)                   // flash function requires: ITEM to flash, CLASS to toggle flash, DURATION of flash
+    }
+
     const cell = document.getElementById(cellId)
-    cell.classList.add('hit')                  // add hit class to cell 
+    const hitClass = 'hit'
+    // cell.classList.add('hit')                  // add hit class to cell 
+    flash(cell, hitClass, 10)                  // flash function requires: ITEM to flash, CLASS to toggle flash, DURATION of flash
     if (playerOneTurn === true) {              // change player lives accordingly
       playerOneLives --
     } else {
       playerTwoLives --
     }
-    const livesOne = document.querySelector('.playerOneLivesNum')      // update lives in HTML
-    livesOne.innerHTML = playerOneLives
-    const livesTwo = document.querySelector('.playerTwoLivesNum')      // update lives in HTML
-    livesTwo.innerHTML = playerTwoLives
+    // const livesOne = document.querySelector('.playerOneLivesNum')      // update lives in HTML
+    // livesOne.innerHTML = playerOneLives
+    // const livesTwo = document.querySelector('.playerTwoLivesNum')      // update lives in HTML
+    // livesTwo.innerHTML = playerTwoLives
   }
 }
 
@@ -130,8 +170,8 @@ class Ship {
 
 const boardOne = new Board(10, 10, 10, 1)           // create two board objects
 const boardTwo = new Board(10, 10, 10, 2)
-boardOne.display()                           // display the two boards
-boardTwo.display()
+//boardOne.display()                           // display the two boards
+//boardTwo.display()
 
 const zAxisBlocker1 = document.createElement('div')  // create a blocker for alternating turns
 const zAxisBlocker2 = document.createElement('div')
@@ -204,7 +244,7 @@ const resetButton = document.querySelector('.resetButton')
 function setUp() {                  // -------------------- function to reset/set up game ------------------ //
   gameState = 0
   console.log('game set up')
-  //zAxisBlocker.classList.add('zAxisOn')      // turns zAxis blocker on
+  //zAxisBlocker.classList.add('zAxisOn')        // turns zAxis blocker on
   zAxisBlocker1.classList.remove('zAxisOn')      // adding z axis class to blocker (starts in off state)
   zAxisBlocker2.classList.remove('zAxisOn')
   xOrY = 0                                              // direction of attack for computer, 0=Y-, 1=X+, 2=Y+, 3=X- 
@@ -214,25 +254,28 @@ function setUp() {                  // -------------------- function to reset/se
   playerTwoTurn = false
   playerOneLives = playerLives(arrayOfShips1)        // player lives = sum of all ship types
   playerTwoLives = playerLives(arrayOfShips2)
-  livesOne.innerHTML = playerOneLives                // initialising lives on page start up
-  livesTwo.innerHTML = playerTwoLives
+  // livesOne.innerHTML = playerOneLives             // initialising lives on page start up
+  // livesTwo.innerHTML = playerTwoLives
   fullCells = []                                     // empty full cells array
   unavailableCells = []
   notAttacked = []
-  boardOne.cells.forEach((cell) => {                // clearing each cell
-    cell.className = ''
-    cell.classList.add('cell')
-  })
-  boardTwo.cells.forEach((cell) => {
-    cell.className = ''
-    cell.classList.add('cell')
-  })
+  boardOne.display()                                 // display the two boards
+  boardTwo.display()
+  // boardOne.cells.forEach((cell) => {              // clearing each cell
+  //   cell.className = ''
+  //   cell.classList.add('cell')
+  // })
+  // boardTwo.cells.forEach((cell) => {
+  //   cell.className = ''
+  //   cell.classList.add('cell')
+  // })
   const fullShipArray = arrayOfShips1.concat(arrayOfShips2)
   fullShipArray.forEach((ship) => {
     ship.bodyCells = []
   })
   removeHover(boardOne)
   removeHover(boardTwo)  
+  placingHover()
   stagePhase(boardOne)                         // ----------- STAGE PHASE call -------- //
   computerStage()
 }
@@ -240,9 +283,9 @@ function setUp() {                  // -------------------- function to reset/se
 rotateButton1.addEventListener('click', () => {              
   rotateShips(1)
 })
-rotateButton2.addEventListener('click', () => {              
-  rotateShips(2)
-})
+// rotateButton2.addEventListener('click', () => {              
+//   rotateShips(2)
+// })
 attackPhaseButton.addEventListener('click', () => {
   gameState = 1
   attackPhase()
@@ -251,7 +294,6 @@ resetButton.addEventListener('click', () => {
   console.log('resetting boards')
   setUp()
 })
-
 // nextTurnButton.addEventListener('click', () => {
 //   stagePhase(boardTwo)
 // })
@@ -259,10 +301,10 @@ setUp()
 
 function rotateShips(board) {                      // function for rotating ships
   if (board === 1) {
-    console.log('rotating ship on board 1')
+    //console.log('rotating ship on board 1')
     arrayOfShips1[displayCounter1].rotation = !arrayOfShips1[displayCounter1].rotation
   } else if (board === 2) {
-    console.log('rotating ship on board 2')
+    //console.log('rotating ship on board 2')
     arrayOfShips2[displayCounter2].rotation = !arrayOfShips2[displayCounter2].rotation
   }
 }
@@ -270,12 +312,12 @@ function rotateShips(board) {                      // function for rotating ship
 // ----------------------------------------------------------STAGING PHASE------------------------------------------------------------------------------ //
 
 function stagePhase(board) {                           // stage phase function
-  console.log(board)
+  //console.log(board)
   board.cells.forEach((cell) => {
     const domCell = document.getElementById(cell.id)
     // console.log('added eventlistener to cell: ' + cell.id)
     domCell.addEventListener('click', () => {         // add eventlistener to each cell in certain board
-      console.log('cell selected: ' + cell.id)
+      //console.log('cell selected: ' + cell.id)
       selectShip(cell.id, board)                      // select ship from array
     })
   })
@@ -288,38 +330,54 @@ function stagePhase(board) {                           // stage phase function
       displayCounter = displayCounter2
       arrayOfShips = arrayOfShips2
     }
-    console.log(board.boardNum + ' counter: ' + displayCounter)
+    //console.log(board.boardNum + ' counter: ' + displayCounter)
     if (displayCounter >= 0) {                         // if there are ships left to add then display the next one
-      console.log('adding ship type: ' + arrayOfShips[displayCounter].type)
-      arrayOfShips[displayCounter].display(cellId)     // run display method within ship object
-      console.log(arrayOfShips)
+      //console.log('adding ship type: ' + arrayOfShips[displayCounter].type)
+      arrayOfShips[displayCounter].display(cellId, 'placement')     // run display method within ship object
+      //console.log(arrayOfShips)
     } else if (displayCounter <= 0) {
       console.log('no more ships left!')
     }
   }
 }
 
+function placingHover() {                                // adding the full hover experience for the staging phase
+  boardOne.cells.forEach((cell) => {
+    //cell.classList.add('shipHover')
+    if (displayCounter1 >= 0) {                          // if there are still ships to add ...
+      cell.addEventListener('mouseover', () => {         // add eventlistener to each cell
+        removeHover(boardOne)
+        cellId = cell.id
+        const currentShip = arrayOfShips1[displayCounter1]   // get current selected ship
+        currentShip.display(cellId, 'hover')                 // display ship, type hover
+        console.log('current ship bodyCells: ')
+        console.log(currentShip.bodyCells)
+        })
+      }
+    })
+}
+
 // ---------------------------------------------------------COMPUTER STAGE PHASE------------------------------------------------------------- //
 
 
 function computerStage() {
-  console.log('computer attempting to place ship') 
+  //console.log('computer attempting to place ship') 
   let availableCells = []
   boardTwo.cells.forEach((cell) => availableCells.push(cell))                              // creating array of available cells for placement 
   const randomNum = Math.round(Math.random() * (availableCells.length - 1))
-  console.log('random number ' + randomNum)
+  //console.log('random number ' + randomNum)
   const randomCell = availableCells[randomNum]                                             // randomly select a cell from available cells array
   const randomCellId = randomCell.id
   // console.log(randomCellId)
   const randomRotation = Math.round(Math.random() * 1) + 1                                 // add random rotation here
   rotateShips(randomRotation)
-  arrayOfShips2[displayCounter2].display(randomCellId)                                     // display ship as normal
-  console.log(randomCell) 
+  arrayOfShips2[displayCounter2].display(randomCellId, 'placement')                                     // display ship as normal
+  //console.log(randomCell) 
   availableCells = availableCells.filter((cell) => {                                       // filter random cell from available cells
     return cell !== randomCell
   })
   // console.log(randomCell)
-  console.log(availableCells.length)
+  //console.log(availableCells.length)
   while (displayCounter2 >= 0) {                                                           // repeat this process until all ships are placed
     computerStage()
   }
@@ -341,7 +399,7 @@ function removeEventListeners(board) {                       // removing eventli
 
 function attackPhase() {                                                        // attack phase start function
   if (displayCounter1 < 0 && displayCounter2 < 0 && (gameState === 1)) {        // checks wether all ships have been placed
-    console.log('Attack time!')
+    infoBar.innerHTML = 'ATTACK PHASE...'
     removeEventListeners(boardOne)                                              // removes eventlisteners from staging phase
     removeEventListeners(boardTwo)
     //addHoverAndAttack(boardOne) 
@@ -352,9 +410,10 @@ function attackPhase() {                                                        
   }
 }
 
-function removeHover(board) {                       // function REMOVES HOVERR class from tiles      
+function removeHover(board) {                       // function REMOVES HOVER class from tiles      
   board.cells.forEach((cell) => {
     cell.classList.remove('hover')
+    cell.classList.remove('shipHoverExt')
   })
 }
 
@@ -396,7 +455,8 @@ function attackCheck(cellId) {
       }
       console.log('MISS!!')
       const cell = document.getElementById(cellId)
-      cell.classList.add('miss')
+      // cell.classList.add('miss')
+      flash(cell, 'miss', 4)
       //attackTurns()
     }
   } else {
@@ -580,8 +640,9 @@ function attackTurns() {
       console.log('frontier empty, potential strategic attack...')
       //let availableCells = []
       // boardOne.cells.forEach((cell) => notAttacked.push(cell))                                // creating array of available cells 
-      const randomNum = Math.round(Math.random() * (notAttacked.length - 1))
-      const randomCell = notAttacked[randomNum]                                             // randomly select a cell from available cells array
+      const randomNum = Math.floor(Math.random() * (notAttacked.length - 1))
+      console.log(randomNum)
+      const randomCell = notAttacked[randomNum]                                                  // randomly select a cell from available cells array
       const randomCellId = randomCell.id
       console.log('attacking cell: ' + randomCellId)
       attackCheck(randomCellId)
@@ -684,6 +745,20 @@ function findShip(shipArray, cellId) {      // a function to find which ship is 
   }
 }
 
+// ---------------------------------------------------------FLASH FUNCTION------------------------------------------------------------------------- //
+
+function flash(item, className, duration, interval=200) {             // this function takes ITEM to be flahsed, CLASSNAME to toggle, DURATION and INTERVAL (default = 200)
+  let counter = duration
+  const flash = setInterval(() => {
+    counter --
+    if (counter > 0) {
+      item.classList.toggle(className)
+    } else {
+      clearInterval(flash)
+    }
+  }, interval)
+}
+
 // ---------------------------------------------------------END GAME----------------------------------------------------------------------------- //
 
 function endGame() {
@@ -695,6 +770,7 @@ function endGame() {
   } else {
     winner = 'COMPUTER'
   }
+  infoBar.innerHTML = `GAME OVER! WINNER: ${winner}`
   console.log('------------GAME OVER-------------')
   console.log(winner + ' has won!')
 }

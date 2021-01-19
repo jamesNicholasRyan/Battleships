@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
 * {
   box-sizing: border-box;
 }
@@ -8,17 +10,51 @@ body {
   align-items: center;
   flex-direction: row;
   margin: 0;
+  font-family: 'VT323', monospace;
 }
 
 main {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  align-items: center;
+  margin: 100px;
+  padding: 10px;
+  width: 2000px;
+  background-color: grey;
 }
 
-section {
+.infoBar {
+  margin: 20px auto;
+  background-color: black;
+}
+
+.infoText {
+  text-align: center;
+  font-size: 30px;
+  width: 600px;
+  height: 50px;
+  line-height: 50px;
+  color: greenyellow;
+  background-color: black;
+  border-radius: 5px;
+}
+
+.upperSection {
   flex-grow: 6;
   display: flex;
   flex-direction: row;
+}
+
+.lowerSection {
+  text-align: center;
+}
+
+.buttonContainer {
+  /* display: flex; */
+  /* flex-direction: row; */
+  /* align-items: center; */
+  width: 500px;
+  margin: 50px auto;
 }
 
 .grid {
@@ -28,7 +64,13 @@ section {
   /* border: 1px solid green; */
   width: 600px;
   height: 600px;
-  margin: 50px;
+  margin: 5px;
+  border-radius: 100px;
+}
+
+#grid2 {
+  background-image: url('./images/radarBackground.png');
+  background-size: cover;
 }
 
 .zAxisOff {
@@ -53,6 +95,12 @@ section {
   font-size: 11px;
 }
 
+.blackCell {
+  background-color: black;
+  opacity: 0.7;
+  border: 1px dotted lime;
+}
+
 .ship {
   /* background-color: grey; */
   background-image: none;
@@ -68,40 +116,120 @@ aside {
   flex-grow: 1;
 }
 
-.leftAside {
-  background-color: teal;
+.leftAside, .rightAside {
+  background-color: navy;
+  color: limegreen;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 200px;
+  border-radius: 3px;
+}
+
+.light {
+  width: 100px;
+  height: 100px;
+  border-radius: 50px;
+  background-color: green;
+  margin: 10px;
+  margin-bottom: 30px;
+}
+
+.shipListTitle {
+  text-align: center;
+  font-size: 25px;
+  margin: 5px;
 }
 
 .lives {
-  background-color: tomato;
+  background-color: black;
   width: 180px;
   height: 400px;
 }
 
-.rotateButton {
-  justify-content: center;
-  align-content: center;
-  margin-top: 200px;
-  margin-bottom: 200px;
+.shipList {
+  margin: 10px;
 }
 
-.nextTurnButton {
-  justify-content: center;
-  align-content: center;
-  margin-top: 50px;
+.itemShip {
+  margin-top: 10px;
 }
 
-#rotate1 {
-  flex-grow: 1;
+.submarineOut1, .submarineOut2 {
+  height: 30px;
+  width: 90px;
+  background-image: url('./images/submarineOutlineGreen.png');
+  background-size: 100%;
 }
 
-#rotate2 {
-  flex-grow: 1;
+.patrolBoatOut1, .patrolBoatOut2 {
+  height: 30px;
+  width: 60px;
+  background-image: url('./images/patrolBoatOutlineGreen.png');
+  background-size: 100%;
+}
+
+.destroyerOut1, .destroyerOut2 {
+  height: 30px;
+  width: 90px;
+  background-image: url('./images/destroyerOutlineGreen.png');
+  background-size: cover;
+}
+
+.battleshipOut1, .battleshipOut2 {
+  height: 30px;
+  width: 120px;
+  background-image: url('./images/battleshipOutlineGreen.png');
+  background-size: cover;
+}
+
+.carrierOut1, .carrierOut2 {
+  height: 30px;
+  width: 150px;
+  background-image: url('./images/battleshipOutlineGreen.png');
+  background-size: cover;
+}
+
+/* ------------------------------------------------------------------ */
+
+.patrolBoatRed {
+  height: 30px;
+  width: 60px;
+  background-image: url('./images/patrolBoatOutlineRed.png');
+  background-size: 100%;
+}
+
+.submarineRed {
+  height: 30px;
+  width: 90px;
+  background-image: url('./images/submarineOutlineRed.png');
+  background-size: 100%;
+}
+
+.destroyerRed {
+  height: 30px;
+  width: 90px;
+  background-image: url('./images/destroyerOutlineRed.png');
+  background-size: cover;
+}
+
+.battleshipRed {
+  height: 30px;
+  width: 120px;
+  background-image: url('./images/battleshipOutlineRed.png');
+  background-size: 100%;
+}
+
+.carrierRed {
+  height: 30px;
+  width: 150px;
+  background-image: url('./images/carrierOutlineRed.png');
+  background-size: 100%;
+}
+
+.red {
+  color: red;
 }
 
 .patrolBoat1 {
@@ -164,6 +292,16 @@ aside {
 .hover:hover {
   opacity: 0.5;
   background-color: greenyellow;
+}
+
+/* .shipHover:hover {
+  opacity: 0.5;
+  background-color: grey;
+} */
+
+.shipHoverExt {
+  opacity: 0.4;
+  background-color: limegreen;
 }
 
 .hit {

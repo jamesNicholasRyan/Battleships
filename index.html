@@ -8,27 +8,62 @@
 </head>
 <body>
   <main>
-    <aside class='leftAside'>
-      <div class='lives'>
-        <div class='playerOneLives'>Player one lives:
-          <div class='playerOneLivesNum'></div>
+    <section classs='infoBar'>
+      <div class='infoText'>... ...</div>
+    </section>
+
+    <section class='upperSection'>
+      <aside class='leftAside'>
+        <div class='light playerTurnLight'></div>
+        <div class='lives'>
+          <div class='shipListTitle'>SHIP STATUS:</div>
+          <div class='shipList'>
+            <div class='itemShip' id='carrier1'>CARRIER</div>
+            <div class='outline carrierOut1'></div>
+            <div class='itemShip' id='battleship1'>BATTLESHIP</div>
+            <div class='outline battleshipOut1'></div>
+            <div class='itemShip' id='destroyer1'>DESTROYER</div>
+            <div class='outline destroyerOut1'></div>
+            <div class='itemShip' id='submarine1'>SUBMARINE</div>
+            <div class='outline submarineOut1'></div>
+            <div class='itemShip' id='patrolBoat1'>PATROL BOAT</div>
+            <div class='outline patrolBoatOut1'></div>
+            <div class='playerOneLivesNum'></div>
+          </div>
         </div>
-        <div class='playerTwoLives'>Computer lives:
-          <div class='playerTwoLivesNum'></div>
-        </div>
-      </div>
-    </aside>
-    <section>
+      </aside>
       <div class='grid' id='grid1'></div>
-      <aside>
+      <div class='grid' id='grid2'></div>
+      <aside class='rightAside'>
+        <div class='light computerTurnLight'></div>
+        <div class='lives'>
+          <div class='shipListTitle'>SHIP STATUS:</div>
+          <div class='shipList'>
+            <div class='itemShip' id='carrier2'>CARRIER</div>
+            <div class='outline carrierOut2'></div>
+            <div class='itemShip' id='battleship2'>BATTLESHIP</div>
+            <div class='outline battleshipOut2'></div>
+            <div class='itemShip' id='destroyer2'>DESTROYER</div>
+            <div class='outline destroyerOut2'></div>
+            <div class='itemShip' id='submarine2'>SUBMARINE</div>
+            <div class='outline submarineOut2'></div>
+            <div class='itemShip' id='patrolBoat2'>PATROL BOAT</div>
+            <div class='outline patrolBoatOut2'></div>
+            <div class='playerTwoLivesNum'></div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class='lowerSection'>
+      <div class='buttonContainer'>
         <button class='rotateButton' id='rotate1'>Rotate</button>
         <button class='attackPhase'>ATTACK PHASE!</button>
         <button class='resetButton'>Reset</button>
-        <button class='rotateButton' id='rotate2'>Rotate</button>
-        <button class='testOne'>FILL BOARD ONE</button>
+        <!-- <button class='rotateButton' id='rotate2'>Rotate</button> -->
+        <!-- <button class='testOne'>FILL BOARD ONE</button> -->
         <!-- <button class='nextTurnButton'>Submit</button> -->
-      </aside>
-      <div class='grid' id='grid2'></div>
+      </div>
     </section>
 
   </main>

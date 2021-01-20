@@ -1,5 +1,6 @@
 const section = document.querySelector('section')
 const infoBar = document.querySelector('.infoText')
+const infoBar2 = document.querySelector('.infoText2')
 infoBar.innerHTML = 'HELLO WORLD'
 
 class Board {
@@ -78,8 +79,8 @@ class Ship {
     const outOfBounds = cellCoordsSlpit.some((cell) => {
       return (cell > 10 || cell < 1)              // checking array to see if any cells are out of bounds
     })
-    console.log('this.bodyCells: ')                   // checking for collisions with OTHER ships
-    console.log(this.bodyCells)
+    //console.log('this.bodyCells: ')                   // checking for collisions with OTHER ships
+    //console.log(this.bodyCells)
     const collision = this.bodyCells.some((shipBlock) => {      // searching through fullCells, comparing to every cell in this.bodyCells
       return fullCells.includes(shipBlock)
     })
@@ -91,7 +92,7 @@ class Ship {
         if (this.board === 1) {                              // run a function to decrease board specific display counter too display next ship in array
           displayCounter1 --
           const capitalisedName = this.name.toUpperCase()
-          infoBar.innerHTML = `PLACED: ${capitalisedName}`   // annouce ship that has been placed
+          infoBar2.innerHTML = `PLACED: ${capitalisedName}`   // annouce ship that has been placed
         } else if (this.board === 2){                        // display next ship in array
           displayCounter2 --
         }
@@ -113,15 +114,15 @@ class Ship {
             }         
           }
         } else if (displayType === 'hover') {              // -------------- HOVER DISPLAY HERE!! ----------------- //
-          console.log('hover display!')
+          //console.log('hover display!')
           const cell = document.getElementById(block)      // adding body cells to HTML to be visualised for HOVER ONLY HERE!!
           cell.classList.add('shipHoverExt')               // adding hover CSS class to cells
         }
         //console.log('adding ship: ' + this.name + ' to ' + position + ' rotation: ' + this.rotation)
       })
     } else {
-      console.log('ship out of bounds!')
-      infoBar.innerHTML = 'SHIP OUT OF BOUNDS'
+      //console.log('ship out of bounds!')
+      infoBar2.innerHTML = 'SHIP OUT OF BOUNDS'
       this.bodyCells = []                        // emptying body cells array, ready for next placement try
     }
     // console.log(this.bodyCells)
@@ -135,28 +136,29 @@ class Ship {
     if (this.lives === 0) {                         // when ship is completely sunk...
       const shipName = this.name.toUpperCase()
       if (this.board === 1) {
-        infoBar.innerHTML = `YOUR ${shipName} HAS BEEN SUNK!`              // indicate when your ship has sunk
+        infoBar2.innerHTML = `YOUR ${shipName} HAS BEEN SUNK!`              // indicate when your ship has sunk
       } else if (this.board === 2) {
-        infoBar.innerHTML = `COMPUTER ${shipName} HAS BEEN SUNK!`          // indicate when computer ship has sunk
+        infoBar2.innerHTML = `COMPUTER ${shipName} HAS BEEN SUNK!`          // indicate when computer ship has sunk
       }
       const shipId = this.name + this.board
       const outlineClass = this.name + 'Out' + this.board
-      console.log(outlineClass)
       const shipItem = document.getElementById(shipId)
       const outline = document.querySelector(`.${outlineClass}`)
-      console.log(outline)
       shipItem.classList.add('red')
       const redOutlineClass = `${this.name}Red`
-      console.log('outline class: ' + redOutlineClass)
       flash(outline, redOutlineClass, 14, 400)                   // flash function requires: ITEM to flash, CLASS to toggle flash, DURATION of flash
     }
 
     const cell = document.getElementById(cellId)
-    // cell.classList.add('hit')                  // add hit class to cell 
-    // flash(cell, 'radarHit', 10)                        // flash function requires: ITEM to flash, CLASS to toggle flash, DURATION of flash
-    if (playerOneTurn === true) {                 // change player lives accordingly
+    const newCell = document.createElement('div')             // create a new cell ontop of old cell
+    cell.appendChild(newCell)                                 // creating/adding HIT art!
+    //newCell.classList.add('hit')                              
+    newCell.style.position = 'absolute'
+
+    if (playerOneTurn === false) {                 // change player lives accordingly
       playerOneLives --
-      flash(cell, 'hit', 10)                        // flash function requires: ITEM to flash, CLASS to toggle flash, DURATION of flash
+      newCell.classList.add('hitCellClass')
+      flash(newCell, 'hit', 10)                        // flash function requires: ITEM to flash, CLASS to toggle flash, DURATION of flash
     } else {
       playerTwoLives --
       flash(cell, 'radarHit', 10)                        // flash function requires: ITEM to flash, CLASS to toggle flash, DURATION of flash
@@ -188,27 +190,26 @@ const carrier1 = new Ship(5, 'carrier', 1)                // creating ships
 const battleship1 = new Ship(4, 'battleship', 1)    
 const destroyer1 = new Ship(3, 'destroyer', 1)
 const submarineOne1 = new Ship(3, 'submarine', 1)
-//const submarineTwo1 = new Ship(3, 'Submarine1', 1)
 const patrolBoatOne1 = new Ship(2, 'patrolBoat', 1)
-//const patrolBoatTwo1 = new Ship(2, 'Patrol Boat1', 1)
 
 const carrier2 = new Ship(5, 'carrier', 2)           
 const battleship2 = new Ship(4, 'battleship', 2)    
 const destroyer2 = new Ship(3, 'destroyer', 2)
 const submarineOne2 = new Ship(3, 'submarine', 2)
-//const submarineTwo2 = new Ship(3, 'Submarine2', 2)
 const patrolBoatOne2 = new Ship(2, 'patrolBoat', 2)
-//const patrolBoatTwo2 = new Ship(2, 'Patrol Boat2', 2)
 
 let fullCells = []
 let unavailableCells = []
 let notAttacked = []
+let notAttackedFiltered = []
 let homeCell = []
 const arrayOfShips1 = []
 const arrayOfShips2 = []  
+let frontier = []
+let xOrY = 0
+let hit = false
+let computerDifficulty = 1
 
-//arrayOfShips1.push(submarineOne1)            // shorter array for testing
-//arrayOfShips2.push(submarineOne2)            // shorter array for testing      
 arrayOfShips1.push(carrier1, battleship1, destroyer1, submarineOne1, patrolBoatOne1)  // adding test ships to array
 arrayOfShips2.push(carrier2, battleship2, destroyer2, submarineOne2, patrolBoatOne2)  // two arrays for each board
 
@@ -223,6 +224,7 @@ function playerLives(array) {                           // function to find play
 }
 
 let gameState = 0
+let turnCount = 0
 let playerOneTurn = true         
 let playerTwoTurn = false
 let playerOneLives = playerLives(arrayOfShips1)                       // player lives = sum of all ship types
@@ -235,9 +237,6 @@ const computerLight = document.querySelector('.computerTurnLight')
 let displayCounter1 = arrayOfShips1.length-1
 let displayCounter2 = arrayOfShips2.length-1
 
-let frontier = []
-let xOrY = 0
-let hit = false
 
 const rotateButton1 = document.getElementById('rotate1')              // rotate ship button board one
 const rotateButton2 = document.getElementById('rotate2')              // rotate ship button board two
@@ -250,21 +249,25 @@ function setUp() {                  // -------------------- function to reset/se
   console.log('game set up')
   //zAxisBlocker.classList.add('zAxisOn')        // turns zAxis blocker on
   zAxisBlocker1.classList.remove('zAxisOn')      // adding z axis class to blocker (starts in off state)
-  zAxisBlocker2.classList.remove('zAxisOn')
-  xOrY = 0                                              // direction of attack for computer, 0=Y-, 1=X+, 2=Y+, 3=X- 
+  zAxisBlocker2.classList.add('zAxisOn')
+  frontier = []
+  xOrY = 0                                          // direction of attack for computer, 0=Y-, 1=X+, 2=Y+, 3=X- 
+  hit = false                                             
   displayCounter1 = arrayOfShips1.length-1
   displayCounter2 = arrayOfShips2.length-1
   playerOneTurn = true         
   playerTwoTurn = false
   playerOneLives = playerLives(arrayOfShips1)        // player lives = sum of all ship types
   playerTwoLives = playerLives(arrayOfShips2)
-  livesOne.innerHTML = playerOneLives             // initialising lives on page start up
+  livesOne.innerHTML = playerOneLives                // initialising lives on page start up
   livesTwo.innerHTML = playerTwoLives
   fullCells = []                                     // empty full cells array
   unavailableCells = []
   notAttacked = []
+  homeCell = []
   // boardOne.display()                                 // display the two boards
   // boardTwo.display()
+  boardOne.cells.forEach((cell) => notAttacked.push(cell))                        // creating array of available cells 
   boardOne.cells.forEach((cell) => {              // clearing each cell
     cell.className = ''
     cell.classList.add('cell')
@@ -277,6 +280,27 @@ function setUp() {                  // -------------------- function to reset/se
   fullShipArray.forEach((ship) => {
     ship.bodyCells = []
   })
+  const hitCellArray = Array.from(document.querySelectorAll('.hitCellClass'))       // finds all hit cells on board
+  hitCellArray.forEach((cell) => {                                                  // for each hitcell, find the parent and remove the hit cell from the parent
+    const parent = cell.parentNode
+    const throwawayNode = parent.removeChild(cell)
+  })
+
+  // notAttackedFiltered = notAttacked.filter((cell) => {                               // creating filtered array for computer to chose attack (optimal spread)
+  //   if ((notAttacked.indexOf(cell) % 2) === 0 ) {
+  //     return cell
+  //   }
+  // })
+  let counter = 1
+  for (i=0; i<100; i+=2) {
+    if (counter === 6) {
+      counter = 1
+      i++
+    }
+    counter ++
+    notAttackedFiltered.push(notAttacked[i])
+  }
+  console.log(notAttackedFiltered)
   removeHover(boardOne)
   removeHover(boardTwo)  
   placingHover()
@@ -316,6 +340,8 @@ function rotateShips(board) {                      // function for rotating ship
 // ----------------------------------------------------------STAGING PHASE------------------------------------------------------------------------------ //
 
 function stagePhase(board) {                           // stage phase function
+  infoBar.innerHTML = 'PREPARATION PHASE'
+  infoBar2.innerHTML = 'PLACE YOUR SHIPS NOWS'
   //console.log(board)
   board.cells.forEach((cell) => {
     const domCell = document.getElementById(cell.id)
@@ -340,7 +366,7 @@ function stagePhase(board) {                           // stage phase function
       arrayOfShips[displayCounter].display(cellId, 'placement')     // run display method within ship object
       //console.log(arrayOfShips)
     } else if (displayCounter <= 0) {
-      infoBar.innerHTML = 'NO MORE SHIPS LEFT TO PLACE'
+      infoBar2.innerHTML = 'NO MORE SHIPS LEFT TO PLACE'
       //console.log('no more ships left!')
     }
   }
@@ -348,15 +374,12 @@ function stagePhase(board) {                           // stage phase function
 
 function placingHover() {                                // adding the full hover experience for the staging phase
   boardOne.cells.forEach((cell) => {
-    //cell.classList.add('shipHover')
     if (displayCounter1 >= 0) {                          // if there are still ships to add ...
       cell.addEventListener('mouseover', () => {         // add eventlistener to each cell
         removeHover(boardOne)
         cellId = cell.id
         const currentShip = arrayOfShips1[displayCounter1]   // get current selected ship
         currentShip.display(cellId, 'hover')                 // display ship, type hover
-        //console.log('current ship bodyCells: ')
-        //console.log(currentShip.bodyCells)
         })
       }
     })
@@ -364,25 +387,18 @@ function placingHover() {                                // adding the full hove
 
 // ---------------------------------------------------------COMPUTER STAGE PHASE------------------------------------------------------------- //
 
-
 function computerStage() {
-  //console.log('computer attempting to place ship') 
   let availableCells = []
   boardTwo.cells.forEach((cell) => availableCells.push(cell))                              // creating array of available cells for placement 
   const randomNum = Math.round(Math.random() * (availableCells.length - 1))
-  //console.log('random number ' + randomNum)
   const randomCell = availableCells[randomNum]                                             // randomly select a cell from available cells array
   const randomCellId = randomCell.id
-  // console.log(randomCellId)
   const randomRotation = Math.round(Math.random() * 1) + 1                                 // add random rotation here
   rotateShips(randomRotation)
-  arrayOfShips2[displayCounter2].display(randomCellId, 'placement')                                     // display ship as normal
-  //console.log(randomCell) 
+  arrayOfShips2[displayCounter2].display(randomCellId, 'placement')                        // display ship as normal
   availableCells = availableCells.filter((cell) => {                                       // filter random cell from available cells
     return cell !== randomCell
   })
-  // console.log(randomCell)
-  //console.log(availableCells.length)
   while (displayCounter2 >= 0) {                                                           // repeat this process until all ships are placed
     computerStage()
   }
@@ -394,9 +410,7 @@ function computerStage() {
 function removeEventListeners(board) {                       // removing eventlistener from each cell in certain board
   board.cells.forEach((cell) => {
     const domCell = document.getElementById(cell.id)
-    // console.log('removing eventlistener for cell: ' + cell.id)
     domCell.removeEventListener('click', () => {             // removing eventlistener from each cell in certain board
-      // console.log('cell selected: ' + cell.id)
       selectShip(cell.id, board)                    
     })
   })
@@ -405,14 +419,14 @@ function removeEventListeners(board) {                       // removing eventli
 function attackPhase() {                                                        // attack phase start function
   if (displayCounter1 < 0 && displayCounter2 < 0 && (gameState === 1)) {        // checks wether all ships have been placed
     infoBar.innerHTML = 'ATTACK PHASE...'
+    infoBar2.innerHTML = 'YOUR TURN'
     removeEventListeners(boardOne)                                              // removes eventlisteners from staging phase
     removeEventListeners(boardTwo)
     //addHoverAndAttack(boardOne) 
     addHoverAndAttack(boardTwo) 
     attackTurns()
   } else {
-    infoBar.innerHTML = 'SOME SHIPS ARE STILL TO BE PLACED!'
-    //console.log('Not all ships placed yet!')
+    infoBar2.innerHTML = 'SOME SHIPS ARE STILL TO BE PLACED!'
   }
 }
 
@@ -437,66 +451,68 @@ function addHoverAndAttack(board) {                                             
 }
 
 function attackCheck(cellId) {
+  console.log('attacking cell: ' + cellId)
+  console.log(unavailableCells)
   if (!unavailableCells.includes(cellId)) {     // check if cell has been attacked already (if it has, it will be in unavailableCells array)
     unavailableCells.push(cellId)
+    //notAttacked.filter((cell) => cell !== cellId)  // remove cell from not attacked
+    //notAttackedFiltered.filter((cell) => cell !== cellId)  // remove cell from not attacked filtered
     switchLights()
-    playerOneTurn = !playerOneTurn
-    playerTwoTurn = !playerTwoTurn
     // console.log(unavailableCells)
     // console.log('cell: ' + cellId + ' attacked!')
-    if (fullCells.includes(cellId)) {          // if player attacks cell that is in full cell array, it is a hit!
-      if (playerTwoTurn === false) {                  // checking if false because we change the boolean 3 lines above.
+    if (fullCells.includes(cellId)) {                // if player attacks cell that is in full cell array, it is a hit!
+      if (playerTwoTurn === true) {                  // checking if false because we change the boolean 3 lines above.
         hit = true            // if it is computer's turn, change hit to true - only change this when its computer's turn
         //console.log('changing hit reference: ' + hit)
       }
-        //hit = true
-      //console.log('SHIP HIT!!')
+      //hit = true
+      console.log('SHIP HIT!!')
       const fullShipArray = arrayOfShips1.concat(arrayOfShips2)    // make an array of ALL ships (to check)
       const hitShip = findShip(fullShipArray, cellId)              // check both arrays to find ship that was hit
       hitShip.shipHit(cellId)                                      // call shipHit method in ship class
       //attackTurns()                                              // call next turn
     } else {
-      if (playerTwoTurn === false) {
-        hit = false            // if it is computer's turn, change hit to false
-        //console.log('changing hit reference: ' + hit)
-      }
-      //console.log('MISS!!')
+      console.log('MISS!!')
       const cell = document.getElementById(cellId)
-      // cell.classList.add('miss')
       if (playerOneTurn === true) {
-        flash(cell, 'miss', 4)
-      } else if (playerTwoTurn === true) {
         flash(cell, 'radarMiss', 4)
+      } else if (playerTwoTurn === true) {
+        flash(cell, 'miss', 4)
+        hit = false                              // if it is computer's turn, change hit to false
       }
-      
-      //attackTurns()
+    }
+
+    playerOneTurn = !playerOneTurn
+    playerTwoTurn = !playerTwoTurn
+
+    if (playerTwoTurn === false) {
+      console.log('computing AI logic...')
+      aIAttack(cellId)
+    }
+    if (playerOneTurn === false) {
+      console.log('----- END OF PLAYER ONE TURN -----')
+    } else {
+      console.log('***** END OF COMPUTER TURN *****')
     }
   } else {
-    //console.log(unavailableCells)
-    //console.log('cell already attacked!')
-    frontier.shift()
-    //attackTurns()
-    //return
-  }
-  if (playerTwoTurn === false) {
-    //console.log('computing AI logic...')
-    aIAttack(cellId)
-  }
-  
-  if (playerOneTurn === false) {
-    console.log('----- END OF PLAYER ONE TURN -----')
-  } else {
-    console.log('***** END OF COMPUTER TURN *****')
+    infoBar2.innerHTML = 'CELL ALREADY ATTACKED!'
+    console.log('cell already attacked!')
+    if (playerTwoTurn === true) {    
+      frontier.shift()
+    }
+
   }
   attackTurns()
 }
 
 // ---------------------------------------------AI LOGIC---------------------------------------------------- //
 function aIAttack(cellId) {
+  console.log('frontier: ')
+  console.log(frontier)
   if (frontier.length === 0) {                                                               // if frontier is empty, computer has no targets yet
     if (hit === true) {                                                                      // check to see if the computer had hit anything
       homeCell = []
-      homeCell.push(cellId)                                                                  // set home cell as originally attacked cell, using VAR!!!
+      homeCell.push(cellId)                                                                  // set home cell as originally attacked cell
       // console.log(homeCell)
       // console.log('successful attack, adding to frontier...')
       // frontier = []
@@ -517,80 +533,51 @@ function aIAttack(cellId) {
           frontier.splice(frontier.indexOf(cell), 1)
         }
       })
-      console.log(frontier)
     } else {
+      infoBar2.innerHTML = 'COMPUTER HAS MISSED ... AND IS VERY SAD :('
       //console.log ('computer has missed and is very sad!')
     }
   } else if (frontier.length > 0) {                                                     // if frontier isn't empty, there are targets to attack
     frontier.shift()                                                                    // removing cell from frontier - cell that was just attacked
     if (hit === true) {                                                                 // check to see if the computer had hit anything
+      console.log('hit: ' + hit)
       //const homeCell = cellId                                                         // memory for original cell attacked that created frontier - to get direction of attack
-      //console.log('something was hit! continuing tragectory...')
       cellToAttackSplit = cellId.split(',')
       cellToAttackSplitX = parseInt(cellToAttackSplit[1])                               // getting X and Y coordds of cell
       cellToAttackSplitY = parseInt(cellToAttackSplit[2])
       if (xOrY === 0) {                                                                 // check which direction the computer was attacking
         const newCellToAttack = '1,' + cellToAttackSplitX + ',' + (cellToAttackSplitY - 1)       // creating new cell from direction of attack
-        //console.log('adding new cell to frontier: ' + newCellToAttack)
         frontier.unshift(newCellToAttack)                                                     // add new cell to FRONT of frontier
       } else if (xOrY === 1) {
         const newCellToAttack = '1,' + (cellToAttackSplitX + 1) + ',' + cellToAttackSplitY      // creating new cell from direction of attack
         frontier.unshift(newCellToAttack)                                                     // add new cell to FRONT of frontier
-        //console.log('adding new cell to frontier: ' + newCellToAttack)
       } else if (xOrY === 2) {
         const newCellToAttack = '1,' + cellToAttackSplitX + ',' + (cellToAttackSplitY + 1)      // creating new cell from direction of attack
         frontier.unshift(newCellToAttack)                                                     // add new cell to FRONT of frontier
-        //console.log('adding new cell to frontier: ' + newCellToAttack)
       } else if (xOrY === 3) {
         const newCellToAttack = '1,' + (cellToAttackSplitX - 1) + ',' + cellToAttackSplitY       // creating new cell from direction of attack
         frontier.unshift(newCellToAttack)                                                     // add new cell to FRONT of frontier
-        //console.log('adding new cell to frontier: ' + newCellToAttack)
       }
       frontier.forEach((cell) => {
         if ((cell.split(',').some((num) => (num > 10) || (num < 1)))) {                      // chekcing if the cells are on the board                                                 // chekcing if the cells have been attacked before
           frontier.splice(frontier.indexOf(cell), 1)                                         // removing cells from frontier if they are not on the board
-          //console.log('new cell out of bounds')
-          // if (xOrY < 3) {                                                                         // computer will not keep attack in this direction
-          //   xOrY++ 
-          //   console.log('xOrY: ' + xOrY) 
-          // } else if (xOrY === 3) {
-          //   xOrY = 0
-          //   console.log('xOrY: ' + xOrY)
-          // }                                                                            // also changing direction if edge of board is found?
         }
         if (unavailableCells.includes(cell)) {
-          frontier.splice(frontier.indexOf(cell), 1)
-          //console.log('new cell already attacked')
-          // if (xOrY < 3) {                                                                         // computer will not keep attack in this direction
-          //   xOrY++ 
-          //   console.log('xOrY: ' + xOrY) 
-          // } else if (xOrY === 3) {
-          //   xOrY = 0
-          //   console.log('xOrY: ' + xOrY)
-          // }      
+          frontier.splice(frontier.indexOf(cell), 1)   
         }
       })
       directionFinder()                                                                       // find next direction of attack
-      //console.log(frontier)
-      //console.log('xOrY: ' + xOrY)
     } else {                                                                                  // if there is no hit, note change in direction of attack... 
-      //console.log('no ship hit, changing direction of attack!')
-      directionFinder()                                                                       // find next direction of attack
-      // if (xOrY < 3) {                                                                      // computer will not keep attack in this direction
-      //   xOrY++ 
-      //   console.log('xOrY: ' + xOrY) 
-      // } else if (xOrY === 3) {
-      //   xOrY = 0
-      //   console.log('xOrY: ' + xOrY)
-      // }                                                                                   
+      console.log('hit: ' + hit)
+      directionFinder()                                                                       // find next direction of attack                                                                                  
     }
   }
 }
 
 function directionFinder() {                                               // function to find direction of next attack!
   if (frontier.length > 0) {
-    //console.log('finding direction to next cell!')
-    //console.log('home cell: ' + homeCell[0])
+    console.log('finding direction to next cell!')
+    console.log('home cell: ' + homeCell[0])
     const directionCellToAttackSplit = frontier[0].split(',')                                            // checking direction of next attack
     const homeCellarray = homeCell[0]
     const homeCellSplit = homeCellarray.split(',')
@@ -598,25 +585,17 @@ function directionFinder() {                                               // fu
     const homeCellY = homeCellSplit[2]
     diffX = parseInt(homeCellX) - parseInt(directionCellToAttackSplit[1])                                    // finding difference between coords for direction
     diffY = parseInt(homeCellY) - parseInt(directionCellToAttackSplit[2])
-    // console.log(homeCell)
-    // console.log(directionCellToAttackSplit)
-    // console.log('diffX: ' + diffX)
-    // console.log('diffY: ' + diffY)
     if (diffX === 0) {                                                  // if X axis difference doesn't change, the attack direction is along the Y axis
       if (diffY > 0) {                                                  // if Y axis difference is positive, the direction is upwards
         xOrY = 0
-        //console.log('next attack is UPWARDS')
       } else if (diffY < 0) {                                           // if Y axis difference is negative, the attack direction is downwards
         xOrY = 2
-        //console.log('next attack is DOWNWARDS')
       }
     } else if (diffY === 0) {                                           // if Y axis difference DOESN'T CHANGE, the attack direction is along the X axis
       if (diffX > 0) {                                                  // if X axis difference is positive, attack direction is LEFT                     
         xOrY = 3
-        //console.log('next attack is LEFT')
       } else if (diffX < 0) {                                           // if X axis difference is NEGATIVE, attack direction is RIGTH  
         xOrY = 1
-        //console.log('next attack is RIGHT')
       }
     }
   }
@@ -624,121 +603,50 @@ function directionFinder() {                                               // fu
 
 // ---------------------------------------------------------ALTERNATING TURN LOGIC-------------------------------------------------------------- //
 
-boardOne.cells.forEach((cell) => notAttacked.push(cell))                                // creating array of available cells 
 
 function attackTurns() {
+  turnCount ++
   if (playerOneLives === 0 || playerTwoLives === 0) {
     endGame()
   } else if (playerOneTurn === true) {                        // check who's turn it is
     console.log('--------- START OF PLAYERS TURN -------')
+    console.log('players turn: ' + playerOneTurn)
+    console.log('computers turn: ' + playerTwoTurn)
     switchLights()
     zAxisBlocker2.classList.remove('zAxisOn')                 // switching blocker on and off between boards
     zAxisBlocker1.classList.add('zAxisOn')
-    // addHoverAndAttack(boardTwo)                            // add hover/attack function to board TWO
-    // boardOne.cells.forEach((cell) => {                     // remove eventlisteners from other board
-    //   const domCell = document.getElementById(cell.id)
-    //   domCell.removeEventListener('click', function() {attackCheck(cell.id)})
-    // })
-    // playerOneTurn = false
-    // playerTwoTurn = true
-    // console.log('playerOneturn: ' + playerOneTurn)
+
   } else if (playerTwoTurn === true) {                        // <==== ----------------COMPUTER'S TURN------------ ??
     console.log('************ START OF COMPUTERS TURN ***********')
+    console.log('players turn: ' + playerOneTurn)
+    console.log('computers turn: ' + playerTwoTurn)
     switchLights()
-    //console.log(frontier)
     zAxisBlocker1.classList.remove('zAxisOn')                 // switching blocker on and off between boards
     zAxisBlocker2.classList.add('zAxisOn')
-    // -----------------------------!!!! COMPUTER ATTACK LOGIC HERE !!!!------------------------------ //
-    if (frontier.length === 0) {
+
+    if (frontier.length === 0) {   // -----------------------------!!!! COMPUTER ATTACK LOGIC HERE !!!!------------------------------ //
       xOrY = 0                                                                                 // reset xOrY
-      //console.log('frontier empty, potential strategic attack...')
-      //let availableCells = []
+      // console.log('frontier empty, potential strategic attack...')
+      // let availableCells = []
       // boardOne.cells.forEach((cell) => notAttacked.push(cell))                                // creating array of available cells 
-      const randomNum = Math.floor(Math.random() * (notAttacked.length))
+      let randomNum = 0
+      let randomCell = 0
+      if (computerDifficulty === 0) {
+        randomNum = Math.floor(Math.random() * (notAttacked.length))
+        randomCell = notAttacked[randomNum]                                                 // randomly select a cell from available cells array
+      } else if (computerDifficulty === 1) {
+        randomNum = Math.floor(Math.random() * (notAttackedFiltered.length))
+        randomCell = notAttackedFiltered[randomNum]                                                  // randomly select a cell from available cells array
+      }
       console.log(randomNum)
-      const randomCell = notAttacked[randomNum]                                                  // randomly select a cell from available cells array
-      const randomCellId = randomCell.id
-      //console.log('attacking cell: ' + randomCellId)
+      let randomCellId = randomCell.id
       attackCheck(randomCellId)
-      // if (hit === true) {                                                                      // check to see if the computer had hit anything
-      //   console.log('successful attack, adding to frontier...')
-      //   frontier = []
-      //   const idSplit = randomCell.id.split(',')
-      //   const idSplitX = parseInt(idSplit[1])                                                  // finding location of hit cell
-      //   const idSplitY = parseInt(idSplit[2])
-      //   const top = '1,' + (idSplitX) + ',' + (idSplitY - 1)                                   // finding neighbouring cells
-      //   const right = '1,' + (idSplitX + 1) + ',' + (idSplitY)
-      //   const bottom = '1,' + idSplitX + ',' + (idSplitY + 1)
-      //   const left = '1,' + (idSplitX - 1) + ',' + idSplitY
-      //   frontier.push(top, right, bottom, left)                                                // staging cells before adding them to frontier
-      //   frontier.forEach((cell) => {
-      //     if ((cell.split(',').some((num) => (num > 10) || (num < 1)))) {                      // chekcing if the cells are on the board                                                 // chekcing if the cells have been attacked before
-      //       frontier.splice(frontier.indexOf(cell), 1)                                         // removing cells from frontier if they are not on the board
-      //     }
-      //     if (unavailableCells.includes(cell)) {
-      //       frontier.splice(frontier.indexOf(cell), 1)
-      //     }
-      //   })
-      // } else {
-      //   console.log ('computer has missed and is very sad!')
-      // }
+
     } else if (frontier.length > 0) {                                                     // if frontier isn't empty, attack cells in frontier!
       const cellToAttack = frontier[0]
-      //console.log('computer strategically attacking cell: ')
-      //console.log(cellToAttack)
-      //frontier.shift()
-      attackCheck(cellToAttack)
-      // if (hit === true) {                                                                 // check to see if the computer had hit anything
-      //   console.log('something was hit! continuing tragectory...')
-      //   cellToAttackSplit = cellToAttack.split(',')
-      //   cellToAttackSplitX = parseInt(cellToAttackSplit[1])                               // getting X and Y coordds of cell
-      //   cellToAttackSplitY = parseInt(cellToAttackSplit[2])
-      //   if (xOrY === 0) {                                                                 // check which direction the computer was attacking
-      //     const newCellToAttack = '1,' + cellToAttackSplitX + ',' + (cellToAttackSplitY - 1)       // creating new cell from direction of attack
-      //     console.log('adding new cell to frontier: ' + newCellToAttack)
-      //     frontier.unshift(newCellToAttack)                                                     // add new cell to FRONT of frontier
-      //   } else if (xOrY === 1) {
-      //     const newCellToAttack = '1,' + (cellToAttackSplitX + 1) + ',' + cellToAttackSplitY      // creating new cell from direction of attack
-      //     frontier.unshift(newCellToAttack)                                                     // add new cell to FRONT of frontier
-      //     console.log('adding new cell to frontier: ' + newCellToAttack)
-      //   } else if (xOrY === 2) {
-      //     const newCellToAttack = '1,' + cellToAttackSplitX + ',' + (cellToAttackSplitY + 1)      // creating new cell from direction of attack
-      //     frontier.unshift(newCellToAttack)                                                     // add new cell to FRONT of frontier
-      //     console.log('adding new cell to frontier: ' + newCellToAttack)
-      //   } else if (xOrY === 3) {
-      //     const newCellToAttack = '1,' + (cellToAttackSplitX - 1) + ',' + cellToAttackSplitY       // creating new cell from direction of attack
-      //     frontier.unshift(newCellToAttack)                                                     // add new cell to FRONT of frontier
-      //     console.log('adding new cell to frontier: ' + newCellToAttack)
-      //   }
-      //   frontier.forEach((cell) => {
-      //     if ((cell.split(',').some((num) => (num > 10) || (num < 1)))) {                      // chekcing if the cells are on the board                                                 // chekcing if the cells have been attacked before
-      //       frontier.splice(frontier.indexOf(cell), 1)                                         // removing cells from frontier if they are not on the board
-      //     }
-      //     if (unavailableCells.includes(cell)) {
-      //       frontier.splice(frontier.indexOf(cell), 1)
-      //     }
-      //   })
-      //   console.log(frontier)
-      //   console.log('xOrY: ' + xOrY)
-      // } else {                                                                                  // if there is no hit, note change in direction of attack... 
-      //   console.log('no ship hit, chaning direction of attack!')
-      //   if (xOrY < 3) {                                                                         // computer will not keep attack in this direction
-      //     xOrY++ 
-      //     console.log('xOrY: ' + xOrY) 
-      //   } else if (xOrY === 3) {
-      //     xOrY = 0
-      //     console.log('xOrY: ' + xOrY)
-      //   }                                                                                   
-      // }
-    }
 
-    // addHoverAndAttack(boardOne)                            // add hover/attack function to board ONE
-    // boardTwo.cells.forEach((cell) => {                     // remove eventlisteners from other board
-    //   cell.removeEventListener('click', function() {attackCheck(cell.id)})
-    // })
-    // playerTwoTurn = false
-    // playerOneTurn = true
-    // console.log('player two turn: ' + playerTwoTurn)
+      attackCheck(cellToAttack)
+    }
   }
 }
 
@@ -750,10 +658,8 @@ function findShip(shipArray, cellId) {      // a function to find which ship is 
     if (ship.bodyCells.some((cell) => cell === cellId)) {       // search every ship and look for actioned cell
       foundShip = ship
     } else {
-      //console.log('no match found')
     }
   })
-  //console.log('match found: ' + foundShip)
   if (foundShip !== '') {                    // if a ship is found, return that ship
     return foundShip
   }
@@ -782,8 +688,6 @@ function switchLights() {
     playerLight.classList.remove('lightOn')
     computerLight.classList.add('lightOn')
   }
-  // console.log(playerLight)
-  // console.log(computerLight)
 }
 
 // ---------------------------------------------------------END GAME----------------------------------------------------------------------------- //
@@ -797,7 +701,8 @@ function endGame() {
   } else {
     winner = 'COMPUTER'
   }
-  infoBar.innerHTML = `GAME OVER! WINNER: ${winner}`
+  infoBar.innerHTML = `GAME OVER!`
+  infoBar2.innerHTML = `WINNER: ${winner}`
   console.log('------------GAME OVER-------------')
   console.log(winner + ' has won!')
 }

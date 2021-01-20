@@ -12,6 +12,15 @@
       <div class='infoText'>... ...</div>
     </section>
 
+    <section class='middleSection'>
+      <div class='boardNames'>
+        <div class='playerBoardName'>&#9660 FRIENDLY SHIPS &#9660</div>
+      </div>
+      <div class='boardNames'>
+        <div class='COMPUTERBoardName'>&#9660; ENEMY RADAR &#9660;</div>
+      </div>
+    </section>
+
     <section class='upperSection'>
       <aside class='leftAside'>
         <div class='light playerTurnLight'></div>
@@ -60,27 +69,26 @@
       </aside>
     </section>
 
-    <section class='middleSection'>
-      <div class='boardNames'>
-        <div class='playerBoardName'>^ FRIENDLY SHIPS ^</div>
-      </div>
-      <div class='boardNames'>
-        <div class='COMPUTERBoardName'>^ ENEMY RADAR ^</div>
-      </div>
-    </section>
-
     <section classs='infoBar2'>
       <div class='infoText infoText2'>... ...</div>
     </section>
 
     <section class='lowerSection'>
-      <div class='buttonContainer'>
-        <button class='rotateButton' id='rotate1'>Rotate</button>
-        <button class='attackPhase'>ATTACK PHASE!</button>
-        <button class='resetButton'>Reset</button>
-        <!-- <button class='rotateButton' id='rotate2'>Rotate</button> -->
-        <!-- <button class='testOne'>FILL BOARD ONE</button> -->
-        <!-- <button class='nextTurnButton'>Submit</button> -->
+      <div class='leftButtons'>
+        <div class='buttonContainer rotateButtonContainer'>
+          <div class='buttonText'>ROTATE SHIPS -----------></div>
+          <button class='rotateButton' id='rotate1'></button>
+        </div>
+        <div class='buttonContainer attackButtonContainer'>
+          <div class='buttonText'>ATTACK PHASE -----------></div>
+          <button class='attackPhase'></button>
+        </div>
+      </div>
+      <div class='rightButtons'>
+        <div class='buttonContainer resetButtonContainer'>
+          <div class='buttonText'>RESET --------------></div>
+          <button class='resetButton'></button>
+        </div>
       </div>
     </section>
 

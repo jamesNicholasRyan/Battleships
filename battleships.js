@@ -92,7 +92,8 @@ class Ship {
         if (this.board === 1) {                              // run a function to decrease board specific display counter too display next ship in array
           displayCounter1 --
           const capitalisedName = this.name.toUpperCase()
-          infoBar2.innerHTML = `PLACED: ${capitalisedName}`   // annouce ship that has been placed
+          const annoucement = `PLACED: ${capitalisedName}`   // annouce ship that has been placed
+          flashText(annoucement, infoBar2, 5)                // use flash function
         } else if (this.board === 2){                        // display next ship in array
           displayCounter2 --
         }
@@ -133,17 +134,21 @@ class Ship {
   shipHit(cellId) {                             // gets called when the ship is hit
     //console.log('ship: ' + this.name + ' has been hit!')
     this.lives --
+    console.log('ship lives: ')
+    console.log(this.name + ' ' + this.lives)
     if (this.lives === 0) {                         // when ship is completely sunk...
       const shipName = this.name.toUpperCase()
       if (this.board === 1) {
-        infoBar2.innerHTML = `YOUR ${shipName} HAS BEEN SUNK!`              // indicate when your ship has sunk
+        const announcement = `YOUR ${shipName} HAS BEEN SUNK!`              // indicate when your ship has sunk
+        flashText(announcement, infoBar2, 5)
       } else if (this.board === 2) {
-        infoBar2.innerHTML = `COMPUTER ${shipName} HAS BEEN SUNK!`          // indicate when computer ship has sunk
+        const announcement = `COMPUTER ${shipName} HAS BEEN SUNK!`              // indicate when your ship has sunk
+        flashText(announcement, infoBar2, 5)
       }
       const shipId = this.name + this.board
       const outlineClass = this.name + 'Out' + this.board
       const shipItem = document.getElementById(shipId)
-      const outline = document.querySelector(`.${outlineClass}`)
+      const outline = document.querySelector(`.${outlineClass}`)        // change outlines of ships when destroyed
       shipItem.classList.add('red')
       const redOutlineClass = `${this.name}Red`
       flash(outline, redOutlineClass, 14, 400)                   // flash function requires: ITEM to flash, CLASS to toggle flash, DURATION of flash
@@ -155,7 +160,7 @@ class Ship {
     //newCell.classList.add('hit')                              
     newCell.style.position = 'absolute'
 
-    if (playerOneTurn === false) {                 // change player lives accordingly
+    if (playerOneTurn === false) {                      // change player lives accordingly
       playerOneLives --
       newCell.classList.add('hitCellClass')
       flash(newCell, 'hit', 10)                        // flash function requires: ITEM to flash, CLASS to toggle flash, DURATION of flash
@@ -280,17 +285,26 @@ function setUp() {                  // -------------------- function to reset/se
   fullShipArray.forEach((ship) => {
     ship.bodyCells = []
   })
+
+  fullShipArray.forEach((ship) => ship.lives = ship.type)                         // resetting ship lives
+  
+  const shipOutlines = Array.from(document.querySelectorAll('.outline'))            // reseting ship outlines
+  shipOutlines.forEach((outline) => {
+    arrayOfShips1.forEach((ship) => {
+      const outlineRed = ship.name + 'Red'
+      outline.classList.remove(outlineRed)
+    })
+  })
+  const shipItems = Array.from(document.querySelectorAll('.itemShip'))
+  console.log(shipItems)
+  shipItems.forEach((ship) => ship.classList.remove('red'))
+
   const hitCellArray = Array.from(document.querySelectorAll('.hitCellClass'))       // finds all hit cells on board
   hitCellArray.forEach((cell) => {                                                  // for each hitcell, find the parent and remove the hit cell from the parent
     const parent = cell.parentNode
     const throwawayNode = parent.removeChild(cell)
   })
 
-  // notAttackedFiltered = notAttacked.filter((cell) => {                               // creating filtered array for computer to chose attack (optimal spread)
-  //   if ((notAttacked.indexOf(cell) % 2) === 0 ) {
-  //     return cell
-  //   }
-  // })
   let counter = 1
   for (i=0; i<100; i+=2) {
     if (counter === 6) {
@@ -300,7 +314,7 @@ function setUp() {                  // -------------------- function to reset/se
     counter ++
     notAttackedFiltered.push(notAttacked[i])
   }
-  console.log(notAttackedFiltered)
+  // console.log(notAttackedFiltered)
   removeHover(boardOne)
   removeHover(boardTwo)  
   placingHover()
@@ -341,7 +355,8 @@ function rotateShips(board) {                      // function for rotating ship
 
 function stagePhase(board) {                           // stage phase function
   infoBar.innerHTML = 'PREPARATION PHASE'
-  infoBar2.innerHTML = 'PLACE YOUR SHIPS NOWS'
+  const announcement = 'PLACE YOUR SHIPS NOW'     
+  flashText(announcement, infoBar2, 5)
   //console.log(board)
   board.cells.forEach((cell) => {
     const domCell = document.getElementById(cell.id)
@@ -366,7 +381,8 @@ function stagePhase(board) {                           // stage phase function
       arrayOfShips[displayCounter].display(cellId, 'placement')     // run display method within ship object
       //console.log(arrayOfShips)
     } else if (displayCounter <= 0) {
-      infoBar2.innerHTML = 'NO MORE SHIPS LEFT TO PLACE'
+      const announcement = 'NO MORE SHIPS LEFT TO PLACE'     
+      flashText(announcement, infoBar2, 5)
       //console.log('no more ships left!')
     }
   }
@@ -419,14 +435,16 @@ function removeEventListeners(board) {                       // removing eventli
 function attackPhase() {                                                        // attack phase start function
   if (displayCounter1 < 0 && displayCounter2 < 0 && (gameState === 1)) {        // checks wether all ships have been placed
     infoBar.innerHTML = 'ATTACK PHASE...'
-    infoBar2.innerHTML = 'YOUR TURN'
+    const announcement = 'YOUR TURN'
+    flashText(announcement, infoBar2, 10)
     removeEventListeners(boardOne)                                              // removes eventlisteners from staging phase
     removeEventListeners(boardTwo)
     //addHoverAndAttack(boardOne) 
     addHoverAndAttack(boardTwo) 
     attackTurns()
   } else {
-    infoBar2.innerHTML = 'SOME SHIPS ARE STILL TO BE PLACED!'
+    const announcement = 'SOME SHIPS ARE STILL TO BE PLACED!'
+    flashText(announcement, infoBar2, 10)
   }
 }
 
@@ -451,8 +469,8 @@ function addHoverAndAttack(board) {                                             
 }
 
 function attackCheck(cellId) {
-  console.log('attacking cell: ' + cellId)
-  console.log(unavailableCells)
+  //console.log('attacking cell: ' + cellId)
+  //console.log(unavailableCells)
   if (!unavailableCells.includes(cellId)) {     // check if cell has been attacked already (if it has, it will be in unavailableCells array)
     unavailableCells.push(cellId)
     //notAttacked.filter((cell) => cell !== cellId)  // remove cell from not attacked
@@ -486,7 +504,7 @@ function attackCheck(cellId) {
     playerTwoTurn = !playerTwoTurn
 
     if (playerTwoTurn === false) {
-      console.log('computing AI logic...')
+      //console.log('computing AI logic...')
       aIAttack(cellId)
     }
     if (playerOneTurn === false) {
@@ -495,17 +513,17 @@ function attackCheck(cellId) {
       console.log('***** END OF COMPUTER TURN *****')
     }
   } else {
-    infoBar2.innerHTML = 'CELL ALREADY ATTACKED!'
+    const announcement = 'CELL ALREADY ATTACKED!'
+    flashText(announcement, infoBar2, 10)
     console.log('cell already attacked!')
     if (playerTwoTurn === true) {    
       frontier.shift()
     }
-
   }
   attackTurns()
 }
 
-// ---------------------------------------------AI LOGIC---------------------------------------------------- //
+// --------------------------------------------------AI LOGIC---------------------------------------------------- //
 function aIAttack(cellId) {
   console.log('frontier: ')
   console.log(frontier)
@@ -534,13 +552,14 @@ function aIAttack(cellId) {
         }
       })
     } else {
-      infoBar2.innerHTML = 'COMPUTER HAS MISSED ... AND IS VERY SAD :('
+      const announcement = 'COMPUTER HAS MISSED ... AND IS VERY SAD :('
+      flashText(announcement, infoBar2, 10)
       //console.log ('computer has missed and is very sad!')
     }
   } else if (frontier.length > 0) {                                                     // if frontier isn't empty, there are targets to attack
     frontier.shift()                                                                    // removing cell from frontier - cell that was just attacked
     if (hit === true) {                                                                 // check to see if the computer had hit anything
-      console.log('hit: ' + hit)
+      //console.log('hit: ' + hit)
       //const homeCell = cellId                                                         // memory for original cell attacked that created frontier - to get direction of attack
       cellToAttackSplit = cellId.split(',')
       cellToAttackSplitX = parseInt(cellToAttackSplit[1])                               // getting X and Y coordds of cell
@@ -576,8 +595,8 @@ function aIAttack(cellId) {
 
 function directionFinder() {                                               // function to find direction of next attack!
   if (frontier.length > 0) {
-    console.log('finding direction to next cell!')
-    console.log('home cell: ' + homeCell[0])
+    //console.log('finding direction to next cell!')
+    //console.log('home cell: ' + homeCell[0])
     const directionCellToAttackSplit = frontier[0].split(',')                                            // checking direction of next attack
     const homeCellarray = homeCell[0]
     const homeCellSplit = homeCellarray.split(',')
@@ -610,16 +629,16 @@ function attackTurns() {
     endGame()
   } else if (playerOneTurn === true) {                        // check who's turn it is
     console.log('--------- START OF PLAYERS TURN -------')
-    console.log('players turn: ' + playerOneTurn)
-    console.log('computers turn: ' + playerTwoTurn)
+    //console.log('players turn: ' + playerOneTurn)
+    //console.log('computers turn: ' + playerTwoTurn)
     switchLights()
     zAxisBlocker2.classList.remove('zAxisOn')                 // switching blocker on and off between boards
     zAxisBlocker1.classList.add('zAxisOn')
 
   } else if (playerTwoTurn === true) {                        // <==== ----------------COMPUTER'S TURN------------ ??
     console.log('************ START OF COMPUTERS TURN ***********')
-    console.log('players turn: ' + playerOneTurn)
-    console.log('computers turn: ' + playerTwoTurn)
+    //console.log('players turn: ' + playerOneTurn)
+    //console.log('computers turn: ' + playerTwoTurn)
     switchLights()
     zAxisBlocker1.classList.remove('zAxisOn')                 // switching blocker on and off between boards
     zAxisBlocker2.classList.add('zAxisOn')
@@ -638,7 +657,7 @@ function attackTurns() {
         randomNum = Math.floor(Math.random() * (notAttackedFiltered.length))
         randomCell = notAttackedFiltered[randomNum]                                                  // randomly select a cell from available cells array
       }
-      console.log(randomNum)
+      //console.log(randomNum)
       let randomCellId = randomCell.id
       attackCheck(randomCellId)
 
@@ -679,6 +698,21 @@ function flash(item, className, duration, interval=200) {             // this fu
   }, interval)
 }
 
+function flashText(string, element, duration, interval=200) {     // this function flashes the given string
+  let counter = duration
+  const flash = setInterval(() => {
+    counter --
+    if (counter > 0) {
+      if (element.innerHTML === '') {
+        element.innerHTML = string
+      } else if (element.innerHTML !== '') {
+        element.innerHTML = ''
+      }
+    } else {
+      clearInterval(flash)
+    }
+  }, interval)
+}
 
 function switchLights() {
   if (playerOneTurn === true) {
@@ -702,7 +736,8 @@ function endGame() {
     winner = 'COMPUTER'
   }
   infoBar.innerHTML = `GAME OVER!`
-  infoBar2.innerHTML = `WINNER: ${winner}`
+  const announcement = `WINNER: ${winner}`
+  flashText(announcement, infoBar2, 41)
   console.log('------------GAME OVER-------------')
   console.log(winner + ' has won!')
 }

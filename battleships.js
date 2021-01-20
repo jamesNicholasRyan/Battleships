@@ -643,29 +643,46 @@ function attackTurns() {
     zAxisBlocker1.classList.remove('zAxisOn')                 // switching blocker on and off between boards
     zAxisBlocker2.classList.add('zAxisOn')
 
-    if (frontier.length === 0) {   // -----------------------------!!!! COMPUTER ATTACK LOGIC HERE !!!!------------------------------ //
-      xOrY = 0                                                                                 // reset xOrY
-      // console.log('frontier empty, potential strategic attack...')
-      // let availableCells = []
-      // boardOne.cells.forEach((cell) => notAttacked.push(cell))                                // creating array of available cells 
-      let randomNum = 0
-      let randomCell = 0
-      if (computerDifficulty === 0) {
-        randomNum = Math.floor(Math.random() * (notAttacked.length))
-        randomCell = notAttacked[randomNum]                                                 // randomly select a cell from available cells array
-      } else if (computerDifficulty === 1) {
+    let counter = 10
+    const computerPicking = setInterval(() => {
+      if (counter > 0) {
+        console.log('computer deciding where to go...')
+        removeHover(boardOne)
         randomNum = Math.floor(Math.random() * (notAttackedFiltered.length))
-        randomCell = notAttackedFiltered[randomNum]                                                  // randomly select a cell from available cells array
+        const randomCell = notAttackedFiltered[randomNum]
+        randomCell.classList.add('shipHoverExt')
+        console.log(randomCell)
+        counter --
+      } else {
+        removeHover(boardOne)
+        clearInterval(computerPicking)
+        
+        if (frontier.length === 0) {   // -----------------------------!!!! COMPUTER ATTACK LOGIC HERE !!!!------------------------------ //
+          xOrY = 0                                                                                 // reset xOrY
+          // console.log('frontier empty, potential strategic attack...')
+          // let availableCells = []
+          // boardOne.cells.forEach((cell) => notAttacked.push(cell))                                // creating array of available cells 
+          let randomNum = 0
+          let randomCell = 0
+          if (computerDifficulty === 0) {
+            randomNum = Math.floor(Math.random() * (notAttacked.length))
+            randomCell = notAttacked[randomNum]                                                 // randomly select a cell from available cells array
+          } else if (computerDifficulty === 1) {
+            randomNum = Math.floor(Math.random() * (notAttackedFiltered.length))
+            randomCell = notAttackedFiltered[randomNum]                                                  // randomly select a cell from available cells array
+          }
+          //console.log(randomNum)
+          let randomCellId = randomCell.id
+          attackCheck(randomCellId)
+    
+        } else if (frontier.length > 0) {                                                     // if frontier isn't empty, attack cells in frontier!
+          const cellToAttack = frontier[0]
+    
+          attackCheck(cellToAttack)
+        }
       }
-      //console.log(randomNum)
-      let randomCellId = randomCell.id
-      attackCheck(randomCellId)
+    }, 250)
 
-    } else if (frontier.length > 0) {                                                     // if frontier isn't empty, attack cells in frontier!
-      const cellToAttack = frontier[0]
-
-      attackCheck(cellToAttack)
-    }
   }
 }
 
@@ -698,7 +715,7 @@ function flash(item, className, duration, interval=200) {             // this fu
   }, interval)
 }
 
-function flashText(string, element, duration, interval=200) {     // this function flashes the given string
+function flashText(string, element, duration, interval=250) {        // this function flashes the given string within its element
   let counter = duration
   const flash = setInterval(() => {
     counter --

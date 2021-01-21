@@ -363,7 +363,6 @@ function setUp() {                  // -------------------- function to reset/se
     // tempCell.style.background = 'red'
   }
   saveButton.style.visibility = 'hidden'
-  displayScores()
 
   console.log(notAttacked)
   console.log(notAttackedFiltered)
@@ -373,6 +372,8 @@ function setUp() {                  // -------------------- function to reset/se
   stagePhase(boardOne)                         // ----------- STAGE PHASE call -------- //
   computerStage()
 }
+
+displayScores()
 
 rotateButton1.addEventListener('click', () => {              
   rotateShips(1)

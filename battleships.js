@@ -363,6 +363,7 @@ function setUp() {                  // -------------------- function to reset/se
     // tempCell.style.background = 'red'
   }
   saveButton.style.visibility = 'hidden'
+  displayScores()
 
   console.log(notAttacked)
   console.log(notAttackedFiltered)
@@ -388,8 +389,9 @@ resetButton.addEventListener('click', () => {
 saveButton.addEventListener('click', ()=> {                                  // saving and displaying scores
   if (saveState) {
     const date = new Date().toLocaleTimeString()
+    const dateText = `${winner} ---- turns:`
     const turnsTaken = Math.round(turnCount/2)
-    const score = `${date} ---- turns: ${turnsTaken}`
+    const score = `${dateText} ${turnsTaken}`
     // scoreText = `${date} ---- turns: ${score}`
     window.localStorage.setItem(date, score)
     while(scores.firstChild){
@@ -728,7 +730,7 @@ function attackTurns() {
     switchLights()
     setTimeout(() => {
       zAxisBlocker2.classList.remove('zAxisOn')
-    }, 2000)                 // switching blocker on and off between boards
+    }, 3000)                 // switching blocker on and off between boards
     zAxisBlocker1.classList.add('zAxisOn')
 
   } else if ((playerTwoTurn === true) && (playerOneTurn === false)) {                        // <==== ----------------COMPUTER'S TURN------------ ??
@@ -850,11 +852,12 @@ function switchLights() {
 }
 
 // ---------------------------------------------------------END GAME----------------------------------------------------------------------------- //
+let winner = ''
 
 function endGame() {
   zAxisBlocker2.classList.add('zAxisOn')                 // switching blocker on and off between boards
   zAxisBlocker1.classList.add('zAxisOn')
-  let winner = ''
+  // let winner = ''
   if (playerOneLives > playerTwoLives) {
     winner = 'YOU'
   } else {

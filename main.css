@@ -448,6 +448,7 @@ aside {
 .shipHoverExt {
   opacity: 0.4;
   background-color: lime;
+  transition: 200ms;
 }
 
 .hit {

@@ -197,7 +197,7 @@ button {
 
 .zAxisOff {
   position: absolute;
-  z-index: -2;
+  z-index: -4;
   background-color: transparent;
   width: 600px;
   height: 600px;
@@ -314,6 +314,7 @@ aside {
   height: 40px;
   background-color: lime;
   z-index: 1;
+  transition: 700ms;
 }
 
 .computerLivesBar {
@@ -322,6 +323,7 @@ aside {
   height: 40px;
   background-color: lime;
   z-index: 1;
+  transition: 700ms;
 }
 
 .playerLives {

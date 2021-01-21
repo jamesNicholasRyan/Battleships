@@ -2,6 +2,12 @@ const section = document.querySelector('section')
 const infoBar = document.querySelector('.infoText')
 const infoBar2 = document.querySelector('.infoText2')
 infoBar.innerHTML = 'HELLO WORLD'
+const livesBarOne = document.querySelector('.playerLivesBar')
+const livesBarTwo = document.querySelector('.computerLivesBar')
+const livesOne = document.querySelector('.playerOneLivesNum')      // update lives in HTML
+const livesTwo = document.querySelector('.playerTwoLivesNum')      // update lives in HTML
+const audioPlayer = document.querySelector('audio')
+audioPlayer.volume = 0.3
 
 class Board {
   constructor(rows, columns, width, boardNum) {
@@ -94,6 +100,13 @@ class Ship {
           const capitalisedName = this.name.toUpperCase()
           const annoucement = `PLACED: ${capitalisedName}`   // annouce ship that has been placed
           flashText(annoucement, infoBar2, 6)                // use flash function
+          if (this.name === 'submarine') {
+            audioPlayer.src = `./sounds/sub.mp3`       // if the ship being placed is a submarine, play sub sound
+            audioPlayer.play()
+          } else {
+            audioPlayer.src = `./sounds/ship.mp3`       // if the ship being placed is a submarine, play sub sound
+            audioPlayer.play()
+          }
         } else if (this.board === 2){                        // display next ship in array
           displayCounter2 --
         }
@@ -164,23 +177,22 @@ class Ship {
       playerOneLives --
       newCell.classList.add('hitCellClass')
       flash(newCell, 'hit', 10, 200)                          // flash function requires: ITEM to flash, CLASS to toggle flash, DURATION of flash
+      audioPlayer.src = `./sounds/hit.mp3`       // if the ship being placed is a submarine, play sub sound
+      audioPlayer.play()
     } else {
       playerTwoLives --
       flash(cell, 'radarHit', 10, 200)                        // flash function requires: ITEM to flash, CLASS to toggle flash, DURATION of flash
+      audioPlayer.src = `./sounds/radarHit.mp3`       // if the ship being placed is a submarine, play sub sound
+      audioPlayer.play()
     }
     percentage()                                                       // work out new lives percentage
-    const livesOne = document.querySelector('.playerOneLivesNum')      // update lives in HTML
-    livesOne.innerHTML = playerPercentage
-    const livesTwo = document.querySelector('.playerTwoLivesNum')      // update lives in HTML
-    livesTwo.innerHTML = computerPercentage
     
-    const livesBarOne = document.querySelector('.playerLivesBar')
+    livesOne.innerHTML = playerPercentage
+    livesTwo.innerHTML = computerPercentage
+
     const newWidth = Math.round((160/17) * playerOneLives)
-    console.log('new player width: ' + newWidth)
     livesBarOne.style.width = `${newWidth}px`
-    const livesBarTwo = document.querySelector('.computerLivesBar')
     const newWidth2 = Math.round((160/17) * playerTwoLives)
-    console.log('new computer width: ' + newWidth2)
     livesBarTwo.style.width = `${newWidth2}px`
   }
 }
@@ -253,14 +265,11 @@ let playerOneLives = playerLives(arrayOfShips1)                       // player 
 let playerTwoLives = playerLives(arrayOfShips2)
 let playerPercentage = '100%'
 let computerPercentage = '100%'
-const livesOne = document.querySelector('.playerOneLivesNum')
-const livesTwo = document.querySelector('.playerTwoLivesNum')
 const playerLight = document.querySelector('.playerTurnLight')
 const computerLight = document.querySelector('.computerTurnLight')
 
 let displayCounter1 = arrayOfShips1.length-1
 let displayCounter2 = arrayOfShips2.length-1
-
 
 const rotateButton1 = document.getElementById('rotate1')              // rotate ship button board one
 const rotateButton2 = document.getElementById('rotate2')              // rotate ship button board two
@@ -291,6 +300,10 @@ function setUp() {                  // -------------------- function to reset/se
   playerTwoLives = playerLives(arrayOfShips2)
   playerPercentage = '100%'
   computerPercentage = '100%'
+  const newWidth = Math.round((160/17) * playerOneLives)
+  livesBarOne.style.width = `${newWidth}px`
+  const newWidth2 = Math.round((160/17) * playerTwoLives)
+  livesBarTwo.style.width = `${newWidth2}px`
   livesOne.innerHTML = playerPercentage                // initialising lives on page start up
   livesTwo.innerHTML = computerPercentage
   fullCells = []                                     // empty full cells array
@@ -565,9 +578,13 @@ function attackCheck(cellId) {
       const cell = document.getElementById(cellId)
       if (playerOneTurn === true) {
         flash(cell, 'radarMiss', 10)
+        audioPlayer.src = `./sounds/radarMiss.mp3`      
+        audioPlayer.play()
       } else if (playerTwoTurn === true) {
         flash(cell, 'miss', 10)
-        hit = false                              // if it is computer's turn, change hit to false
+        audioPlayer.src = `./sounds/miss1.mp3`         
+        audioPlayer.play()
+        hit = false                                    // if it is computer's turn, change hit to false
       }
     }
 
@@ -709,7 +726,9 @@ function attackTurns() {
     console.log('players turn: ' + playerOneTurn)
     console.log('computers turn: ' + playerTwoTurn)
     switchLights()
-    zAxisBlocker2.classList.remove('zAxisOn')                 // switching blocker on and off between boards
+    setTimeout(() => {
+      zAxisBlocker2.classList.remove('zAxisOn')
+    }, 2000)                 // switching blocker on and off between boards
     zAxisBlocker1.classList.add('zAxisOn')
 
   } else if ((playerTwoTurn === true) && (playerOneTurn === false)) {                        // <==== ----------------COMPUTER'S TURN------------ ??

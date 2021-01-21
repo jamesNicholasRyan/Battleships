@@ -117,6 +117,32 @@ button {
   border-radius: 5px;
 }
 
+.saveButtonContainer {
+  visibility: hidden;
+  transition: 500;
+}
+
+.highScores {
+  margin: 50px;
+  width: 500px;
+  background-color: rgb(80, 80, 80);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 40px;
+  color: lime
+}
+
+.scores {
+  padding: 10px;
+  font-size: 35px;
+  width: 400px;
+  height: 500px;
+  background: black;
+  border-radius: 10px;
+}
+
 .grid {
   display: flex;
   flex-direction: row;
@@ -272,10 +298,36 @@ aside {
   margin: 10px;
 }
 
-.livesNum {
+.livesContainer {
+  width: 160px;
+  height: 40px;
+  color: black;
   font-size: 40px;
   text-align: center;
   margin-top: 10px;
+  background-color: rgb(255, 0, 0);
+}
+
+.playerLivesBar {
+  position: absolute;
+  width: 160px;
+  height: 40px;
+  background-color: lime;
+  z-index: 1;
+}
+
+.computerLivesBar {
+  position: absolute;
+  width: 160px;
+  height: 40px;
+  background-color: lime;
+  z-index: 1;
+}
+
+.playerLives {
+  font-size: 25px;
+  position: absolute;
+  z-index: 2;
 }
 
 .itemShip {
@@ -448,7 +500,7 @@ aside {
 .shipHoverExt {
   opacity: 0.4;
   background-color: lime;
-  transition: 200ms;
+  /* transition: 200ms; */
 }
 
 .hit {

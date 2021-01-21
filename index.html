@@ -37,7 +37,10 @@
             <div class='outline submarineOut1'></div>
             <div class='itemShip' id='patrolBoat1'>PATROL BOAT</div>
             <div class='outline patrolBoatOut1'></div>
-            <div class='livesNum playerOneLivesNum'></div>
+            <div class='livesContainer'>
+              <div class='livesBar playerLivesBar'></div>
+            </div>
+            <div class='playerLives playerOneLivesNum'></div>
           </div>
         </div>
       </aside>
@@ -63,7 +66,10 @@
             <div class='outline submarineOut2'></div>
             <div class='itemShip' id='patrolBoat2'>PATROL BOAT</div>
             <div class='outline patrolBoatOut2'></div>
-            <div class='livesNum playerTwoLivesNum'></div>
+            <div class='livesContainer'>
+              <div class='livesBar computerLivesBar'></div>
+            </div>
+            <div class='playerLives playerTwoLivesNum'></div>
           </div>
         </div>
       </aside>
@@ -84,11 +90,22 @@
           <button class='attackPhase'></button>
         </div>
       </div>
+
       <div class='rightButtons'>
         <div class='buttonContainer resetButtonContainer'>
-          <div class='buttonText'>RESET --------------></div>
+          <div class='buttonText'>RESET ------------------></div>
           <button class='resetButton'></button>
         </div>
+        <div class='buttonContainer saveButtonContainer'>
+          <div class='buttonText'>SAVE SCORE -------------></div>
+          <button class='saveButton'></button>
+        </div>
+      </div>
+    </section>
+
+    <section class='highScores'>HIGH SCORES
+      <div class='scores'>
+
       </div>
     </section>
 

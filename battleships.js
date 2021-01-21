@@ -168,10 +168,20 @@ class Ship {
       playerTwoLives --
       flash(cell, 'radarHit', 10, 200)                        // flash function requires: ITEM to flash, CLASS to toggle flash, DURATION of flash
     }
+    percentage()                                                       // work out new lives percentage
     const livesOne = document.querySelector('.playerOneLivesNum')      // update lives in HTML
-    livesOne.innerHTML = playerOneLives
+    livesOne.innerHTML = playerPercentage
     const livesTwo = document.querySelector('.playerTwoLivesNum')      // update lives in HTML
-    livesTwo.innerHTML = playerTwoLives
+    livesTwo.innerHTML = computerPercentage
+    
+    const livesBarOne = document.querySelector('.playerLivesBar')
+    const newWidth = Math.round((160/17) * playerOneLives)
+    console.log('new player width: ' + newWidth)
+    livesBarOne.style.width = `${newWidth}px`
+    const livesBarTwo = document.querySelector('.computerLivesBar')
+    const newWidth2 = Math.round((160/17) * playerTwoLives)
+    console.log('new computer width: ' + newWidth2)
+    livesBarTwo.style.width = `${newWidth2}px`
   }
 }
 
@@ -228,12 +238,21 @@ function playerLives(array) {                           // function to find play
   }, 0)
 }
 
+function percentage() {
+  const playerPer = Math.round((parseInt(playerOneLives)/17)*100)
+  const compPer = Math.round((parseInt(playerTwoLives)/17)*100)
+  playerPercentage =  `${playerPer}%`
+  computerPercentage =  `${compPer}%`
+}
+
 let gameState = 0
 let turnCount = 0
 let playerOneTurn = true         
 let playerTwoTurn = false
 let playerOneLives = playerLives(arrayOfShips1)                       // player lives = sum of all ship types
 let playerTwoLives = playerLives(arrayOfShips2)
+let playerPercentage = '100%'
+let computerPercentage = '100%'
 const livesOne = document.querySelector('.playerOneLivesNum')
 const livesTwo = document.querySelector('.playerTwoLivesNum')
 const playerLight = document.querySelector('.playerTurnLight')
@@ -248,11 +267,15 @@ const rotateButton2 = document.getElementById('rotate2')              // rotate 
 const nextTurnButton = document.querySelector('.nextTurnButton')      // submit button
 const attackPhaseButton = document.querySelector('.attackPhase')      // next phase button
 const resetButton = document.querySelector('.resetButton')
+const saveButton = document.querySelector('.saveButtonContainer')
+const scores = document.querySelector('.scores')
+let saveState = false
 
 addAttack(boardTwo)  // calling this ONCE per game! at the start and never again
 
 function setUp() {                  // -------------------- function to reset/set up game ------------------ //
   gameState = 0
+  turnCount = 0
   console.log('game set up')
   //zAxisBlocker.classList.add('zAxisOn')        // turns zAxis blocker on
   zAxisBlocker1.classList.remove('zAxisOn')      // adding z axis class to blocker (starts in off state)
@@ -266,13 +289,16 @@ function setUp() {                  // -------------------- function to reset/se
   playerTwoTurn = false
   playerOneLives = playerLives(arrayOfShips1)        // player lives = sum of all ship types
   playerTwoLives = playerLives(arrayOfShips2)
-  livesOne.innerHTML = playerOneLives                // initialising lives on page start up
-  livesTwo.innerHTML = playerTwoLives
+  playerPercentage = '100%'
+  computerPercentage = '100%'
+  livesOne.innerHTML = playerPercentage                // initialising lives on page start up
+  livesTwo.innerHTML = computerPercentage
   fullCells = []                                     // empty full cells array
   unavailableCells = []
   notAttacked = []
   notAttackedFiltered = []
   homeCell = []
+  saveState = false
   // boardOne.display()                                 // display the two boards
   // boardTwo.display()
   boardOne.cells.forEach((cell) => notAttacked.push(cell))                        // creating array of available cells 
@@ -323,6 +349,7 @@ function setUp() {                  // -------------------- function to reset/se
     // const tempCell = document.getElementById(cellId)
     // tempCell.style.background = 'red'
   }
+  saveButton.style.visibility = 'hidden'
 
   console.log(notAttacked)
   console.log(notAttackedFiltered)
@@ -336,20 +363,41 @@ function setUp() {                  // -------------------- function to reset/se
 rotateButton1.addEventListener('click', () => {              
   rotateShips(1)
 })
-// rotateButton2.addEventListener('click', () => {              
-//   rotateShips(2)
-// })
+
 attackPhaseButton.addEventListener('click', () => {
   gameState = 1
   attackPhase()
 })
 resetButton.addEventListener('click', () => {
-  //console.log('resetting boards')
   setUp()
+  // playerTwoLives = 0
 })
-// nextTurnButton.addEventListener('click', () => {
-//   stagePhase(boardTwo)
-// })
+saveButton.addEventListener('click', ()=> {                                  // saving and displaying scores
+  if (saveState) {
+    const date = new Date().toLocaleTimeString()
+    const turnsTaken = Math.round(turnCount/2)
+    const score = `${date} ---- turns: ${turnsTaken}`
+    // scoreText = `${date} ---- turns: ${score}`
+    window.localStorage.setItem(date, score)
+    while(scores.firstChild){
+      scores.removeChild(scores.firstChild)
+    }
+    displayScores()
+  }
+  saveState = false
+})
+
+// localStorage.clear();
+
+function displayScores() {
+  const arrayOfScores = Object.entries(localStorage).map(e => e[1]).sort((a,b) => a-b)
+  arrayOfScores.forEach((score) => {
+    const li = document.createElement('li')
+    li.innerHTML = score
+    scores.appendChild(li)
+  })
+}
+
 setUp()
 
 function rotateShips(board) {                      // function for rotating ships
@@ -483,14 +531,16 @@ function attackCheck(cellId) {
   console.log('ATTACK CHECK BEING CALLED')
   //console.log('attacking cell: ' + cellId)
   //console.log(unavailableCells)
+  console.log(notAttacked)
+  console.log(notAttackedFiltered)
   if (!unavailableCells.includes(cellId)) {     // check if cell has been attacked already (if it has, it will be in unavailableCells array)
     unavailableCells.push(cellId)
 
     if (playerTwoTurn === true) {                                               // if it is the computers turn, take away from not attacked
-      const cellIndex = notAttacked.indexOf(cellId)
-      notAttacked.splice(cellIndex, 1)                                          // remove cell from not attacked
-      const cellIndexFiltered = notAttackedFiltered.indexOf(cellId)
-      notAttackedFiltered.splice(cellIndexFiltered, 1)                          // remove cell from not attacked filtered
+      const newNotAttackedFiltered = notAttackedFiltered.filter((cell) => cell.id !== cellId)
+      const newNotAttacked = notAttacked.filter((cell) => cell.id !== cellId)
+      notAttacked = newNotAttacked 
+      notAttackedFiltered = newNotAttackedFiltered
     }
 
     switchLights()
@@ -501,7 +551,6 @@ function attackCheck(cellId) {
         hit = true                                   // if it is computer's turn, change hit to true - only change this when its computer's turn
         //console.log('changing hit reference: ' + hit)
       }
-      //hit = true
       console.log(cellId)
       console.log('SHIP HIT!!')
       flashText('SHIP HIT!', infoBar2, 11)
@@ -535,16 +584,20 @@ function attackCheck(cellId) {
       console.log('***** END OF COMPUTER TURN *****')
     }
 
-  } else if (unavailableCells.includes(cellId)){
+    console.log('ATTACK TURNS BEING CALLED.....')
+    setTimeout(attackTurns, 0)
+
+  } else if (unavailableCells.includes(cellId)) {
     const announcement = 'CELL ALREADY ATTACKED!'
     flashText(announcement, infoBar2, 10)
     console.log('cell already attacked!' + cellId)
     if (playerTwoTurn === true) {    
       frontier.shift()
     }
+    console.log('ATTACK TURNS BEING CALLED.....')
+    setTimeout(attackTurns, 0)
   }
-  console.log('ATTACK TURNS BEING CALLED.....')
-  setTimeout(attackTurns(),2000)
+
 }
 
 // --------------------------------------------------AI LOGIC---------------------------------------------------- //
@@ -649,7 +702,7 @@ function directionFinder() {                                               // fu
 function attackTurns() {
   turnCount ++
   console.log('turn count: ' + turnCount)
-  if (playerOneLives === 0 || playerTwoLives === 0) {
+  if (playerOneLives <= 0 || playerTwoLives <= 0) {
     endGame()
   } else if ((playerOneTurn === true) && (playerTwoTurn === false)) {                        // check who's turn it is
     console.log('--------- START OF PLAYERS TURN -------')
@@ -665,25 +718,25 @@ function attackTurns() {
     console.log('computers turn: ' + playerTwoTurn)
     // console.log(frontier)
     switchLights()
-    zAxisBlocker1.classList.remove('zAxisOn')                 // switching blocker on and off between boards
+    //zAxisBlocker1.classList.remove('zAxisOn')                 // switching blocker on and off between boards
     zAxisBlocker2.classList.add('zAxisOn')
 
-    // let pickCounter = 5
-    // let computerPicking = 0
-    // computerPicking = setInterval(() => {                     // interval animation to make it look like the computer is deciding where to go...
-    //   if (pickCounter > 0) {
-    //     console.log('computer deciding where to go...')
-    //     removeHover(boardOne)
-    //     randomPick = Math.floor(Math.random() * (notAttacked.length))
-    //     const randomPickCell = notAttacked[randomPick]
-    //     randomPickCell.classList.add('shipHoverExt')
-    //     console.log(randomPickCell)
-    //     pickCounter --
-    //   } else if (pickCounter === 0) {
-    //     removeHover(boardOne)
-    //     clearInterval(computerPicking)
-    //   }
-    // }, 500)
+    let pickCounter = 3
+    let computerPicking = 0
+    computerPicking = setInterval(() => {                     // interval animation to make it look like the computer is deciding where to go...
+      if (pickCounter > 0) {
+        console.log('computer deciding where to go...')
+        removeHover(boardOne)
+        randomPick = Math.floor(Math.random() * (notAttacked.length))
+        const randomPickCell = notAttacked[randomPick]
+        randomPickCell.classList.add('shipHoverExt')
+        console.log(randomPickCell)
+        pickCounter --
+      } else if (pickCounter === 0) {
+        removeHover(boardOne)
+        clearInterval(computerPicking)
+      }
+    }, 400)
 
     console.log(notAttacked.length)
     console.log(notAttackedFiltered.length)
@@ -695,27 +748,28 @@ function attackTurns() {
         // console.log('frontier empty, potential strategic attack...')
         // let availableCells = []
         // boardOne.cells.forEach((cell) => notAttacked.push(cell))                                // creating array of available cells 
-        let randomNum = 0
-        let randomCell = 0
-        if ((computerDifficulty === 0) || (turnCount > 100)) {
+        let randomNum = '0'
+        let randomCell = '0'
+        if ((computerDifficulty === 0) || (turnCount > 120)) {                                // when turncount gets to specific number, computer starts attacking every cell on board
           randomNum = Math.floor(Math.random() * (notAttacked.length))
           randomCell = notAttacked[randomNum]                                                 // randomly select a cell from available cells array
         } else if (computerDifficulty === 1) {
           randomNum = Math.floor(Math.random() * (notAttackedFiltered.length))
           randomCell = notAttackedFiltered[randomNum]                                                  // randomly select a cell from available cells array
         }
-        //console.log(randomNum)
+        
         let randomCellId = randomCell.id
-        console.log('ATTACKCHECK BEING CALLED from frontier.length === 0')
+        console.log(randomCellId)
+        // console.log('ATTACKCHECK BEING CALLED from frontier.length === 0')
         attackCheck(randomCellId)
 
       } else if ((frontier.length > 0)) {                                                     // if frontier isn't empty, attack cells in frontier!
-        console.log('ATTACKING FRONTIER')
+        // console.log('ATTACKING FRONTIER')
         const cellToAttack = frontier[0]
-        console.log('ATTACKCHECK BEING CALLED from frontier.length > 0')
+        // console.log('ATTACKCHECK BEING CALLED from frontier.length > 0')
         attackCheck(cellToAttack)
       }
-    }, 275)
+    }, 1800)
 
   }
 }
@@ -792,6 +846,8 @@ function endGame() {
   flashText(announcement, infoBar2, 41)
   console.log('------------GAME OVER-------------')
   console.log(winner + ' has won!')
+  saveState = true
+  saveButton.style.visibility = 'visible'
 }
 
 

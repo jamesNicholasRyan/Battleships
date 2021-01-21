@@ -543,6 +543,7 @@ function addAttack(board) {
 }
 
 function attackCheck(cellId) {
+  zAxisBlocker2.classList.add('zAxisOn')
   console.log('ATTACK CHECK BEING CALLED')
   //console.log('attacking cell: ' + cellId)
   //console.log(unavailableCells)

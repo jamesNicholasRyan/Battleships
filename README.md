@@ -137,7 +137,7 @@ function computerStage() {
 
 ## Attack Phase (computer logic)
 
-To alternate turns, essentially switching between the boards, I used a **blocking div** to cover each board when necessary. To *block* a board, I changed the z-index of the *div* so that it would be above the board in question - this blocking any attempts at *clicking*/*hovering*: 
+To alternate turns, essentially switching between the boards, I used a **blocking div** to cover each board when necessary. To *block* a board, I changed the z-index of the *div* so that it would be above the board in question - this blocks any attempts at *clicking*/*hovering*: 
 ```js
     zAxisBlocker2.classList.remove('zAxisOn')
     zAxisBlocker1.classList.add('zAxisOn')
@@ -178,7 +178,7 @@ function aIAttack(cellId) {
     }
     // ...
 ```
-To utilise the logic in step 4, I created a function called **directionFinder**. This function will calculate the direction the computer is currently attacking in relation to the *home cell* (The home cell is the saved durng step 2 - being the first cell *HIT*). This direction is saved in a variable called **XorY** - 0 being UPWARDS, 1 being RIGHT, 2 being DOWNWARDS and 3 being LEFT. With this information, the computer can add the next cell along in the chain of *HITS*.
+To utilise the logic in step 4, I created a function called **directionFinder**. This function will calculate the direction the computer is currently attacking in relation to the *home cell* (The home cell is saved durng step 2 - being the first cell *HIT*). This direction is saved in a variable called **xOrY** - 0 being UPWARDS, 1 being RIGHT, 2 being DOWNWARDS and 3 being LEFT. With this information, the computer can add the next cell in a chain of *HITS*.
 
 ```js
 function directionFinder() {    
@@ -224,6 +224,9 @@ Below is the loop I used to create this chequered board of targets. The array **
   }
 ```
 
+The affect of this tactic can be seen in the following image. This improvement makes the AI much more challenging and creates a more entertaining game to play: 
+![](./images/checkquered.png)
+
 ## Visuals
 
 For some extra eye-candy I planned to flash certain elements and text. To save me from repeating myself, I created various functions that fullfilled these rolls: 
@@ -265,3 +268,29 @@ function endGame() {
   saveButton.style.visibility = 'visible'
 }
 ```
+
+# Conclusion
+
+## Challenges
+- Figuring out how to compute the AIs directional logic was a challenge. I initially had just the computer attack in one direction until they *MISSED*, however, this ran into trouble when the computer was attacking into the edges of the board. I finally settled with a direction finder function that could be called anywhere. 
+- Working out a way to alternate the turns between the players was also a challenge. Initially I was implementing a system to remove and edd *even listeners* when ever it was the players turn. This proved to be difficult and I am glad I settled with the basic *z-index* system. A bit of a 'hack', but it works!
+
+## Bugs
+- After resetting the game, player clicks to attack a cell caused the computer to take 3 or 4 turns
+  - The cause of this bug was very simple. I was calling eventlisteners EVERY time the reset button was clicked. Therefore, when the player clicked, they where calling the attack function more than once.
+
+- Implementing *setIntervals* to simulate the computer's choice of attack opened up a can of worms. Without adjusting the *z-index blockers*, this meant the player could take there turn before the computer had taken theirs. 
+  - Fixed by adjusting the switching of the *z-index blockers*.  
+
+## Future Features:
+- Menu screen, with various options
+- Reveal computer ships at Game End
+- Visual coordinates for boards (homage to the original game!)
+- Menu and game music
+- Machine learning for the AI?
+  - When looking at all possible random board layouts, there are definite *hot-spots*, where you are likely to find ships, and *dry-spots*, where ships are less likely to be. I believe there is exciting potential to train an AI to find the optimal strategy when encountering these different board layouts. 
+
+  
+Full screenshot: 
+![](./images/fullscreen.png)
+

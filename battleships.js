@@ -20,33 +20,24 @@ class Board {
   }
 
   display() {
-    // create grid to hold board
     const gridId = '#grid' + this.boardNum
     const grid = document.querySelector(gridId)
-    // grid.classList.add ('grid')
-    // section.appendChild(grid)
     for (let i = 1; i < this.rows + 1; i++) {
       for (let j = 1; j < this.columns + 1; j++) {
-        // create a div and add it to cells[], adding an Id too
         const cell = document.createElement('div')
         const cellID = this.boardNum + ',' + j + ',' + i + ''
         cell.id = cellID
         if (this.boardNum === 1) {                        // checking which board is being created - black board for board 2
           cell.classList.add('cell')
-          console.log('board one cells')
         } else if (this.boardNum === 2) {
           cell.classList.add('blackCell')
-          console.log('board two cells')
         }
         grid.appendChild(cell)
         this.cells.push(cell)
-        // cell.innerHTML = cellID
         cell.style.width = `${100 / this.width}%`
         cell.style.height = `${100 / this.width}%`
-        // cell.backgroundImage = '.images/waterTile1.png'
       }
     }
-    // console.log(this.cells)
   }
 }
 
@@ -81,19 +72,13 @@ class Ship {
   display(position, displayType) {
     this.createBodyCells(position)                 // function for creating ship body above
     const cellCoordsSlpit = this.bodyCells.toString().split(',')
-    // console.log('cell body split: ' + cellCoordsSlpit)
     const outOfBounds = cellCoordsSlpit.some((cell) => {
       return (cell > 10 || cell < 1)              // checking array to see if any cells are out of bounds
     })
-    //console.log('this.bodyCells: ')                   // checking for collisions with OTHER ships
-    //console.log(this.bodyCells)
     const collision = this.bodyCells.some((shipBlock) => {      // searching through fullCells, comparing to every cell in this.bodyCells
       return fullCells.includes(shipBlock)
     })
-    //console.log('colission: ' + collision + ', outOfBounds: ' + outOfBounds)
-
     if (!outOfBounds && !collision) {                        // if ship isn't out of bounds
-      //console.log('ship within boundary!')
       if (displayType === 'placement') {                     // if display type = placement, decrement displaycounter
         if (this.board === 1) {                              // run a function to decrease board specific display counter too display next ship in array
           displayCounter1 --
@@ -111,14 +96,12 @@ class Ship {
           displayCounter2 --
         }
       }
-
       let counter = 1                                  
       this.bodyCells.forEach((block) => { 
         if (displayType === 'placement') {                   // check if ship is being placed or hover display       
           fullCells.push(block)                              // adding cells to 'full' array -- they are not taken up by ships
           if (this.board === 1) {
             const partName = this.name + counter             // creating class name according to ship type & length
-            //console.log(partName)
             counter ++
             const cell = document.getElementById(block)      // adding body cells to HTML to be visualised (only if they are Human's ships)
             cell.classList.add(partName)                     // visual CSS variable here
@@ -128,20 +111,14 @@ class Ship {
             }         
           }
         } else if (displayType === 'hover') {              // -------------- HOVER DISPLAY HERE!! ----------------- //
-          //console.log('hover display!')
           const cell = document.getElementById(block)      // adding body cells to HTML to be visualised for HOVER ONLY HERE!!
           cell.classList.add('shipHoverExt')               // adding hover CSS class to cells
         }
-        //console.log('adding ship: ' + this.name + ' to ' + position + ' rotation: ' + this.rotation)
       })
     } else {
-      //console.log('ship out of bounds!')
       infoBar2.innerHTML = 'SHIP OUT OF BOUNDS'
       this.bodyCells = []                        // emptying body cells array, ready for next placement try
     }
-    // console.log(this.bodyCells)
-    // console.log(arrayOfFullCells)
-    // console.log(collision)
   }
 
   shipHit(cellId) {                             // gets called when the ship is hit

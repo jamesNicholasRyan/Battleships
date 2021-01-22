@@ -35,9 +35,9 @@ When I had a basic game complete, I aimed for these extra goals:
 - Git & GitHub
 
 
-## Approach
+# Approach
 
-# Planning
+## Planning
 Before writing a single line of code, I planned extensively for the week ahead. I outlined the core foundations of the game I would like to make by the end of the week:
 - There will be two boards, one for the player and one for the computer.
 - The game will have **three stages**: *preparation stage*, *attacking phase* & *end game*
@@ -45,11 +45,11 @@ Before writing a single line of code, I planned extensively for the week ahead. 
   - The **attacking phase** will start once all ships are placed. In this pahse the players take turns to attack cells on each other's boards.
   - When either players ships are all destroyed, the game **ends**
 
-# Grid
+## Grid
 At the heart of the game is the grid system, where all of the action takes plce. For the grid layout I decided to proceed with a *cartesian* type coordinate system, with the origin at the top left of the grid. This would make searching for neighbouring cells and position much easier than a simple list of cells. Each cell was assigned an *ID* that corresponded of - 'board number', 'column' ('j') and 'row' ('i').
 
 - I created a **Board** *class* which contained this *display* method:
-'''js
+```js
   display() {
     const gridId = '#grid' + this.boardNum
     const grid = document.querySelector(gridId)
@@ -70,13 +70,13 @@ At the heart of the game is the grid system, where all of the action takes plce.
       }
     }
   }
-'''
+```
 
-# Preparation Phase
+## Preparation Phase
 To allow for dynamic rotation and placement of the ships, I decided to create a **Ship** *class*. Each **Ship** had 7 keys: *type*, *name*, *poisition*, *rotation*, *bodyCells*, *lives* and *board*.
 
 - When called apon, each ship had a method that works out the correct orientation and placement of the ships *body cells*, depending on their *position* & *type* (length):
-'''js
+```js
  createBodyCells(position) {                  
     this.bodyCells = [] 
     this.bodyCells.push(position) 
@@ -91,10 +91,10 @@ To allow for dynamic rotation and placement of the ships, I decided to create a 
       }
     }
   }
-'''
+```
 
 - As with the **Board** class, each **Ship** has a *display* mathod. Within this method, there are collision checks for the edges and other ships. I used an array called 'fullCells' to determine which cells had ships in them:
-'''js
+```js
   const cellCoordsSlpit = this.bodyCells.toString().split(',')
   const outOfBounds = cellCoordsSlpit.some((cell) => {
     return (cell > 10 || cell < 1) 
@@ -102,12 +102,12 @@ To allow for dynamic rotation and placement of the ships, I decided to create a 
   const collision = this.bodyCells.some((shipBlock) => {      
     return fullCells.includes(shipBlock)
   })
-'''
+```
 
 Ship placement for the AI is exactly the same as the players', however, the process is completely random - if the computer comes across collisions, the AI will repeat the methods until no collisions are found:
 
-- I have a **displayCounter** *const* that keeps track of which ships are being placed
-'''js
+- I have a *const* **displayCounter2** that keeps track of which ships are being placed
+```js
 function computerStage() {
   let availableCells = []
   boardTwo.cells.forEach((cell) => availableCells.push(cell))                    
@@ -124,6 +124,6 @@ function computerStage() {
     computerStage()
   }
 }
-'''
+```
 
-# Attack Phase
+## Attack Phase

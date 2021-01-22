@@ -46,9 +46,9 @@ Before writing a single line of code, I planned extensively for the week ahead. 
   - When either players ships are all destroyed, the game **ends**
 
 ## Grid
-At the heart of the game is the grid system, where all of the action takes plce. For the grid layout I decided to proceed with a *cartesian* type coordinate system, with the origin at the top left of the grid. This would make searching for neighbouring cells and position much easier than a simple list of cells. Each cell was assigned an *ID* that corresponded of - 'board number', 'column' ('j') and 'row' ('i').
+At the heart of the game is the grid system, where all of the action takes place. For the grid layout I decided to proceed with a *cartesian* type coordinate system, with the origin at the top left of the grid. This would make searching for neighbouring cells and position much easier than a simple list of cells. Each cell was assigned an *ID* that corresponded of - 'board number', 'column' ('j') and 'row' ('i').
 
-- I created a **Board** *class* which contained this *display* method:
+- I created a **Board** *class* which contains this *display* method:
 ```js
   display() {
     const gridId = '#grid' + this.boardNum
@@ -73,9 +73,16 @@ At the heart of the game is the grid system, where all of the action takes plce.
 ```
 
 ## Preparation Phase
-To allow for dynamic rotation and placement of the ships, I decided to create a **Ship** *class*. Each **Ship** had 7 keys: *type*, *name*, *poisition*, *rotation*, *bodyCells*, *lives* and *board*.
+To allow for dynamic rotation and placement of the ships, I decided to create a **Ship** *class*. Each **Ship** has 7 keys: *type*, *name*, *poisition*, *rotation*, *bodyCells*, *lives* and *board*.
 
-- When called apon, each ship had a method that works out the correct orientation and placement of the ships *body cells*, depending on their *position* & *type* (length):
+(All ship pixel art was created by me, in the opensource graphics editor GIMP)
+![](./images/carrier.png)
+![](./images/battleship.png)
+![](./images/destroyer.png)
+![](./images/submarine.png)
+![](./images/patrolBoat.png)
+
+- When called apon, each ship has a method that works out the correct orientation and placement of the ships *body cells*, depending on their *position* & *type* (length):
 ```js
  createBodyCells(position) {                  
     this.bodyCells = [] 
@@ -93,7 +100,7 @@ To allow for dynamic rotation and placement of the ships, I decided to create a 
   }
 ```
 
-- As with the **Board** class, each **Ship** has a *display* mathod. Within this method, there are collision checks for the edges and other ships. I used an array called 'fullCells' to determine which cells had ships in them:
+- As with the **Board** class, each **Ship** has a *display* method, which contains collision checks for the edges and other ships. I used an array called 'fullCells' to determine which cells had ships in them:
 ```js
   const cellCoordsSlpit = this.bodyCells.toString().split(',')
   const outOfBounds = cellCoordsSlpit.some((cell) => {

@@ -333,11 +333,7 @@ function setUp() {                  // -------------------- function to reset/se
       i--
     }
     counter ++
-    notAttackedFiltered.push(notAttacked[i])
-    // const cell = notAttacked[i]
-    // const cellId = cell.id
-    // const tempCell = document.getElementById(cellId)
-    // tempCell.style.background = 'red'
+    notAttackedFiltered.push(notAttacked[i])d'
   }
   saveButton.style.visibility = 'hidden'
 
@@ -613,7 +609,6 @@ function aIAttack(cellId) {
       const left = '1,' + (idSplitX - 1) + ',' + idSplitY
       frontier.push(top, right, bottom, left)                                                // staging cells before adding them to frontier
       frontier.forEach((cell) => {
-        //console.log('checking cell: ' + cell.split(','))
         if ((cell.split(',').some((num) => (num > 10) || (num < 1)))) {                      // chekcing if the cells are on the board                                                 // chekcing if the cells have been attacked before
           frontier.splice(frontier.indexOf(cell), 1)                                         // removing cells from frontier if they are not on the board
         }
@@ -624,7 +619,6 @@ function aIAttack(cellId) {
     } else {
       const announcement = 'COMPUTER HAS MISSED ... AND IS VERY SAD :('
       flashText(announcement, infoBar2, 10)
-      //console.log ('computer has missed and is very sad!')
     }
   } else if (frontier.length > 0) {                                                     // if frontier isn't empty, there are targets to attack
     frontier.shift()                                                                    // removing cell from frontier - cell that was just attacked
@@ -665,8 +659,6 @@ function aIAttack(cellId) {
 
 function directionFinder() {                                               // function to find direction of next attack!
   if (frontier.length > 0) {
-    //console.log('finding direction to next cell!')
-    //console.log('home cell: ' + homeCell[0])
     const directionCellToAttackSplit = frontier[0].split(',')                                            // checking direction of next attack
     const homeCellarray = homeCell[0]
     const homeCellSplit = homeCellarray.split(',')

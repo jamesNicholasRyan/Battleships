@@ -10,13 +10,12 @@ Try it out [here](https://jamesnicholasryan.github.io/Battleships/)!
 
 The game was to be created as a solo project and completed within one week.
 
-
 ## Brief
 - **Render a game in the browser**
 - **Design logic for winning** & **visually display which player won**
 - **Include separate HTML / CSS / JavaScript files**
 - Stick with **KISS (Keep It Simple Stupid)** and **DRY (Don't Repeat Yourself)** principles
-- Use **Javascript** for **DOM manipulation**
+- Use **JavaScript** for **DOM manipulation**
 - **The game should be one player, with the computer placing its pieces randomly at the start of the game**
 - **The computer should be able to make random attacks on the player's board**
 
@@ -26,13 +25,12 @@ When I had a basic game complete, I aimed for these extra goals:
 - Visual enhancements (ship indicators etc.)
 
 ## Technologies used
-- Javascript (ES6)
+- JavaScript (ES6)
 - HTML5
 - CSS
 - Pro Tools (for SFX editing and mixing)
 - GIMP (for pixel art and details)
 - Git & GitHub
-
 
 # Approach
 
@@ -44,9 +42,8 @@ Before writing a single line of code, I planned extensively for the week ahead. 
   - The **attacking phase** will start once all ships are placed. In this pahse the players take turns to attack cells on each other's boards.
   - When either players ships are all destroyed, the game **ends**
 
-
 ## Grid
-At the heart of the game is the grid system, where all of the action takes place. For the grid layout I decided to proceed with a *cartesian* type coordinate system, with the origin at the top left of the grid. This would make searching for neighbouring cells and position much easier than a simple list of cells. Each cell was assigned an *ID* that corresponded of - 'board number', 'column' ('j') and 'row' ('i').
+At the heart of the game is the grid system, where all the action takes place. For the grid layout I decided to proceed with a *cartesian* type coordinate system, with the origin at the top left of the grid. This would make searching for neighbouring cells and position much easier than a simple list of cells. Each cell was assigned an *ID* that corresponded of - 'board number', 'column' ('j') and 'row' ('i').
 
 I created a **Board** *class* which contains this *display* method:
 ```js
@@ -73,7 +70,6 @@ I created a **Board** *class* which contains this *display* method:
 ```
 ![](./images/gridsSS.png)
 
-
 ## Preparation Phase
 To allow for dynamic rotation and placement of the ships, I decided to create a **Ship** *class*. Each **Ship** has 7 keys: *type*, *name*, *poisition*, *rotation*, *bodyCells*, *lives* and *board*.
 
@@ -84,7 +80,7 @@ To allow for dynamic rotation and placement of the ships, I decided to create a 
 ![](./images/submarine.png)
 ![](./images/patrolBoat.png)
 
-When called apon, each ship has a method that works out the correct orientation and placement of the ships *body cells*, depending on their *position* & *type* (length):
+When called upon, each ship has a method that works out the correct orientation and placement of the ships *body cells*, depending on their *position* & *type* (length):
 ```js
  createBodyCells(position) {                  
     this.bodyCells = [] 
@@ -113,7 +109,7 @@ As with the **Board** class, each **Ship** has a *display* method, which contain
   })
 ```
 
-Ship placement for the AI is exactly the same as the players', however, the process is completely random - if the computer comes across collisions, the AI will repeat the methods until no collisions are found:
+Ship placement for the AI is the same as the players', however, the process is completely random - if the computer comes across collisions, the AI will repeat the methods until no collisions are found:
 
 I have a *const* **displayCounter2** that keeps track of which ships are being placed - while this counter is larger than *zero*, the AI repeats the staging phase:
 ```js
@@ -207,7 +203,7 @@ function directionFinder() {
 }
 ```
 
-This logic has some flaws, but it is a massive improvement to the randomly attacking AI. An even more refined tactic is to restrict the available cells in the initial attacks. Instead of every cell, every OTHER cell on the board is targetted, thus avoiding wasted attacks in cells that can't possibly hold the smallest variant of the available ships (2 cells long - *Patrol Boat*).
+This logic has some flaws, but it is a massive improvement to the randomly attacking AI. An even more refined tactic is to restrict the available cells in the initial attacks. Instead of every cell, every OTHER cell on the board is targetted, thus avoiding wasted attacks in cells that cannot possibly hold the smallest variant of the available ships (2 cells long - *Patrol Boat*).
 
 Below is the loop I used to create this chequered board of targets. The array **notAttackedFiltered** is what I feed to the computer for **step 1** of the AI logic:
 ```js
@@ -248,10 +244,9 @@ function flash(item, className, duration, interval=200) {
 
 In similar fashion, I created a **flashText** *function* that worked in a similar way, instead it takes in a *string* argument, rather than a *className*. 
 
-
 ## End Game
 
-Everytime a turn starts, I would run code to check whether either player has lost all their ships. If this condition is met, both boards are locked and the winner is announced. Once this is complete, the player is given the option to save their score to Windows Local Storage:
+Everytime a turn starts, I would run code to check whether either player has lost all their ships. If this condition is met, both boards are locked, and the winner is announced. Once this is complete, the player is given the option to save their score to Windows Local Storage:
 ```JS
 function endGame() {
   zAxisBlocker2.classList.add('zAxisOn')
@@ -272,14 +267,14 @@ function endGame() {
 # Conclusion
 
 ## Challenges
-- Figuring out how to compute the AIs directional logic was a challenge. I initially had just the computer attack in one direction until they *MISSED*, however, this ran into trouble when the computer was attacking into the edges of the board. I finally settled with a direction finder function that could be called anywhere. 
-- Working out a way to alternate the turns between the players was also a challenge. Initially I was implementing a system to remove and edd *even listeners* when ever it was the players turn. This proved to be difficult and I am glad I settled with the basic *z-index* system. A bit of a 'hack', but it works!
+- Figuring out how to compute the AIs directional logic was a challenge. I initially had the computer attack in one direction until they *MISSED*, however, this ran into trouble when the computer was attacking the edges of the board. I finally settled with a direction-finder function that could be called anywhere. 
+- Working out a way to alternate the turns between the players was also a challenge. Initially I implemented a system to remove and add *even listeners* whenever it was the players turn. This proved to be difficult and I am glad I settled with the basic *z-index* system. A bit of a 'hack', but it works!
 
 ## Bugs
 - After resetting the game, player clicks to attack a cell caused the computer to take 3 or 4 turns
-  - The cause of this bug was very simple. I was calling eventlisteners EVERY time the reset button was clicked. Therefore, when the player clicked, they where calling the attack function more than once.
+  - The cause of this bug was quite simple. I was calling *eventListeners* EVERY time the reset button was clicked. Therefore, when the player clicked, they were calling the attack function more than once. Simply calling the *eventListeners* once at the start of the script eliminated this problem.
 
-- Implementing *setIntervals* to simulate the computer's choice of attack opened up a can of worms. Without adjusting the *z-index blockers*, this meant the player could take there turn before the computer had taken theirs. 
+- Implementing *setIntervals* to simulate the computer's choice of attack opened a can of worms. Without adjusting the *z-index blockers*, this meant the player could take there turn before the computer had taken theirs. 
   - Fixed by adjusting the switching of the *z-index blockers*.  
 
 ## Future Features:
@@ -293,4 +288,5 @@ function endGame() {
   
 Full screenshot: 
 ![](./images/fullscreen.png)
+
 

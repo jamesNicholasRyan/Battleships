@@ -600,15 +600,10 @@ function attackCheck(cellId) {
 
 // --------------------------------------------------AI LOGIC---------------------------------------------------- //
 function aIAttack(cellId) {
-  console.log('frontier: ')
-  console.log(frontier)
   if (frontier.length === 0) {                                                               // if frontier is empty, computer has no targets yet
     if (hit === true) {                                                                      // check to see if the computer had hit anything
       homeCell = []
       homeCell.push(cellId)                                                                  // set home cell as originally attacked cell
-      // console.log(homeCell)
-      // console.log('successful attack, adding to frontier...')
-      // frontier = []
       const idSplit = cellId.split(',')
       const idSplitX = parseInt(idSplit[1])                                                  // finding location of hit cell
       const idSplitY = parseInt(idSplit[2])

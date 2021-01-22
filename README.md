@@ -25,7 +25,6 @@ When I had a basic game complete, I aimed for these extra goals:
 - More intelligent attacks by the computer
 - Visual enhancements (ship indicators etc.)
 
-
 ## Technologies used
 - Javascript (ES6)
 - HTML5
@@ -44,6 +43,7 @@ Before writing a single line of code, I planned extensively for the week ahead. 
   - During the **preparation phase**, the player will place ships (ships must be able to rotate). The computer will place ships randomly during this phase, without collision or overlapping. 
   - The **attacking phase** will start once all ships are placed. In this pahse the players take turns to attack cells on each other's boards.
   - When either players ships are all destroyed, the game **ends**
+
 
 ## Grid
 At the heart of the game is the grid system, where all of the action takes place. For the grid layout I decided to proceed with a *cartesian* type coordinate system, with the origin at the top left of the grid. This would make searching for neighbouring cells and position much easier than a simple list of cells. Each cell was assigned an *ID* that corresponded of - 'board number', 'column' ('j') and 'row' ('i').
@@ -71,11 +71,13 @@ At the heart of the game is the grid system, where all of the action takes place
     }
   }
 ```
+![](./images/gridSS.png)
+
 
 ## Preparation Phase
 To allow for dynamic rotation and placement of the ships, I decided to create a **Ship** *class*. Each **Ship** has 7 keys: *type*, *name*, *poisition*, *rotation*, *bodyCells*, *lives* and *board*.
 
-(All ship pixel art was created by me, in the opensource graphics editor GIMP)
+(All ship pixel art was created by me, in the open-source graphics editor GIMP)         
 ![](./images/carrier.png)
 ![](./images/battleship.png)
 ![](./images/destroyer.png)
@@ -113,7 +115,7 @@ To allow for dynamic rotation and placement of the ships, I decided to create a 
 
 Ship placement for the AI is exactly the same as the players', however, the process is completely random - if the computer comes across collisions, the AI will repeat the methods until no collisions are found:
 
-- I have a *const* **displayCounter2** that keeps track of which ships are being placed
+- I have a *const* **displayCounter2** that keeps track of which ships are being placed - while this counter is larger than *zero*, the AI repeats the staging pahse:
 ```js
 function computerStage() {
   let availableCells = []
@@ -133,4 +135,91 @@ function computerStage() {
 }
 ```
 
-## Attack Phase
+## Attack Phase (computer logic)
+
+To alternate turns, essentially switching between the boards, I used a **blocking div** to cover each board when necessary. To *block* a board, I changed the z-index of the *div* so that it would be above the board in question - this blocking any attempts at *clicking*/*hovering*: 
+```js
+    zAxisBlocker2.classList.remove('zAxisOn')
+    zAxisBlocker1.classList.add('zAxisOn')
+```
+Once I had succesfully created a randomly attacking AI, I set to task with creating a more intelligent targetting system. The essence of this logic is as follows: 
+  1. The computer player targets the player board randomly, repeating each turn until it gets a direct **HIT** on an enemy ship
+  2. At that moment, the computer creates a **frontier** array filling it with neighbouring cells (up, right, down, left)  
+  3. Next turn, instead of attacking randomly, the computer targets the first cell in the **frontier** array (removing it from the array too!).
+  4. If this attack is a **HIT**, then add the next cell (*in the same direction of attack*) to the FRONT of the frontier array
+  5. Repeat step 3 until the **frontier** is empty.
+
+- Here is the first half of my **aIAttack** *function* that shows the code for step 2:
+```js
+function aIAttack(cellId) {
+  if (frontier.length === 0) { 
+    if (hit === true) {   
+      homeCell = []
+      homeCell.push(cellId) 
+      const idSplit = cellId.split(',')
+      const idSplitX = parseInt(idSplit[1]) 
+      const idSplitY = parseInt(idSplit[2])
+      const top = '1,' + (idSplitX) + ',' + (idSplitY - 1)  
+      const right = '1,' + (idSplitX + 1) + ',' + (idSplitY)
+      const bottom = '1,' + idSplitX + ',' + (idSplitY + 1)
+      const left = '1,' + (idSplitX - 1) + ',' + idSplitY
+      frontier.push(top, right, bottom, left)   
+      frontier.forEach((cell) => {
+        if ((cell.split(',').some((num) => (num > 10) || (num < 1)))) { 
+          frontier.splice(frontier.indexOf(cell), 1)   
+        }
+        if (unavailableCells.includes(cell)) {
+          frontier.splice(frontier.indexOf(cell), 1)
+        }
+      })
+    } else {
+      const announcement = 'COMPUTER HAS MISSED ... AND IS VERY SAD :('
+      flashText(announcement, infoBar2, 10)
+    }
+    // ...
+```
+To utilise the logic in step 4, I created a function called **directionFinder**. This function will calculate the direction the computer is currently attacking in relation to the *home cell* (The home cell is the saved durng step 2 - being the first cell *HIT*). This direction is saved in a variable called **XorY** - 0 being UPWARDS, 1 being RIGHT, 2 being DOWNWARDS and 3 being LEFT. With this information, the computer can add the next cell along in the chain of *HITS*.
+
+```js
+function directionFinder() {    
+  if (frontier.length > 0) {
+    const directionCellToAttackSplit = frontier[0].split(',') 
+    const homeCellarray = homeCell[0]
+    const homeCellSplit = homeCellarray.split(',')
+    const homeCellX = homeCellSplit[1]
+    const homeCellY = homeCellSplit[2]
+    diffX = parseInt(homeCellX) - parseInt(directionCellToAttackSplit[1])
+    diffY = parseInt(homeCellY) - parseInt(directionCellToAttackSplit[2])
+    if (diffX === 0) { 
+      if (diffY > 0) {  
+        xOrY = 0
+      } else if (diffY < 0) { 
+        xOrY = 2
+      }
+    } else if (diffY === 0) {
+      if (diffX > 0) {
+        xOrY = 3
+      } else if (diffX < 0) {
+        xOrY = 1
+      }
+    }
+  }
+}
+```
+
+This logic has some flaws, but it is a massive improvement to the randomly attacking AI. An even more refined tactic is to restrict the available cells in the initial attacks. Instead of every cell, every OTHER cell on the board is targetted thus avoiding wasted attacks in cells that can't possibly hold the smallest variant of the available ships (2 cells long).
+
+- Below is the loop I used to create this chequered board or targets. The array **notAttackedFiltered** is the array I feed to the computer for **step 1** of the AI logic:
+```js
+  let counter = 0
+  for (i=0; i<100; i+=2) {
+    if (counter === 5) {
+      i++
+    } else if (counter === 10) {
+      counter = 0
+      i--
+    }
+    counter ++
+    notAttackedFiltered.push(notAttacked[i])d'
+  }
+```

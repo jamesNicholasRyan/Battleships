@@ -48,7 +48,7 @@ Before writing a single line of code, I planned extensively for the week ahead. 
 ## Grid
 At the heart of the game is the grid system, where all of the action takes place. For the grid layout I decided to proceed with a *cartesian* type coordinate system, with the origin at the top left of the grid. This would make searching for neighbouring cells and position much easier than a simple list of cells. Each cell was assigned an *ID* that corresponded of - 'board number', 'column' ('j') and 'row' ('i').
 
-- I created a **Board** *class* which contains this *display* method:
+I created a **Board** *class* which contains this *display* method:
 ```js
   display() {
     const gridId = '#grid' + this.boardNum
@@ -71,20 +71,20 @@ At the heart of the game is the grid system, where all of the action takes place
     }
   }
 ```
-![](./images/gridSS.png)
+![](./images/gridsSS.png)
 
 
 ## Preparation Phase
 To allow for dynamic rotation and placement of the ships, I decided to create a **Ship** *class*. Each **Ship** has 7 keys: *type*, *name*, *poisition*, *rotation*, *bodyCells*, *lives* and *board*.
 
-(All ship pixel art was created by me, in the open-source graphics editor GIMP)         
+(All pixel art was created by me in the open-source graphics editor GIMP)         
 ![](./images/carrier.png)
 ![](./images/battleship.png)
 ![](./images/destroyer.png)
 ![](./images/submarine.png)
 ![](./images/patrolBoat.png)
 
-- When called apon, each ship has a method that works out the correct orientation and placement of the ships *body cells*, depending on their *position* & *type* (length):
+When called apon, each ship has a method that works out the correct orientation and placement of the ships *body cells*, depending on their *position* & *type* (length):
 ```js
  createBodyCells(position) {                  
     this.bodyCells = [] 
@@ -102,7 +102,7 @@ To allow for dynamic rotation and placement of the ships, I decided to create a 
   }
 ```
 
-- As with the **Board** class, each **Ship** has a *display* method, which contains collision checks for the edges and other ships. I used an array called 'fullCells' to determine which cells had ships in them:
+As with the **Board** class, each **Ship** has a *display* method, which contains collision checks for the edges and other ships. I used an array called 'fullCells' to determine which cells had ships in them:
 ```js
   const cellCoordsSlpit = this.bodyCells.toString().split(',')
   const outOfBounds = cellCoordsSlpit.some((cell) => {
@@ -115,7 +115,7 @@ To allow for dynamic rotation and placement of the ships, I decided to create a 
 
 Ship placement for the AI is exactly the same as the players', however, the process is completely random - if the computer comes across collisions, the AI will repeat the methods until no collisions are found:
 
-- I have a *const* **displayCounter2** that keeps track of which ships are being placed - while this counter is larger than *zero*, the AI repeats the staging pahse:
+I have a *const* **displayCounter2** that keeps track of which ships are being placed - while this counter is larger than *zero*, the AI repeats the staging phase:
 ```js
 function computerStage() {
   let availableCells = []
@@ -149,7 +149,7 @@ Once I had succesfully created a randomly attacking AI, I set to task with creat
   4. If this attack is a **HIT**, then add the next cell (*in the same direction of attack*) to the FRONT of the frontier array
   5. Repeat step 3 until the **frontier** is empty.
 
-- Here is the first half of my **aIAttack** *function* that shows the code for step 2:
+Here is the first half of my **aIAttack** *function* that shows the code for step 2:
 ```js
 function aIAttack(cellId) {
   if (frontier.length === 0) { 
@@ -207,9 +207,9 @@ function directionFinder() {
 }
 ```
 
-This logic has some flaws, but it is a massive improvement to the randomly attacking AI. An even more refined tactic is to restrict the available cells in the initial attacks. Instead of every cell, every OTHER cell on the board is targetted thus avoiding wasted attacks in cells that can't possibly hold the smallest variant of the available ships (2 cells long).
+This logic has some flaws, but it is a massive improvement to the randomly attacking AI. An even more refined tactic is to restrict the available cells in the initial attacks. Instead of every cell, every OTHER cell on the board is targetted, thus avoiding wasted attacks in cells that can't possibly hold the smallest variant of the available ships (2 cells long - *Patrol Boat*).
 
-- Below is the loop I used to create this chequered board or targets. The array **notAttackedFiltered** is the array I feed to the computer for **step 1** of the AI logic:
+Below is the loop I used to create this chequered board of targets. The array **notAttackedFiltered** is what I feed to the computer for **step 1** of the AI logic:
 ```js
   let counter = 0
   for (i=0; i<100; i+=2) {
@@ -222,4 +222,46 @@ This logic has some flaws, but it is a massive improvement to the randomly attac
     counter ++
     notAttackedFiltered.push(notAttacked[i])d'
   }
+```
+
+## Visuals
+
+For some extra eye-candy I planned to flash certain elements and text. To save me from repeating myself, I created various functions that fullfilled these rolls: 
+
+The **flash** *function* takes: *item* being flashed, CSS *class name* to toggle the flash, the *duration* of the flash and the *interval* of the flashes: 
+```js
+function flash(item, className, duration, interval=200) {
+  let counter = duration
+  const flash = setInterval(() => {
+    counter --
+    if (counter > 0) {
+      item.classList.toggle(className)
+    } else {
+      clearInterval(flash)
+    }
+  }, interval)
+}
+``` 
+
+In similar fashion, I created a **flashText** *function* that worked in a similar way, instead it takes in a *string* argument, rather than a *className*. 
+
+
+## End Game
+
+Everytime a turn starts, I would run code to check whether either player has lost all their ships. If this condition is met, both boards are locked and the winner is announced. Once this is complete, the player is given the option to save their score to Windows Local Storage:
+```JS
+function endGame() {
+  zAxisBlocker2.classList.add('zAxisOn')
+  zAxisBlocker1.classList.add('zAxisOn')
+  if (playerOneLives > playerTwoLives) {
+    winner = 'YOU'
+  } else {
+    winner = 'COMPUTER'
+  }
+  infoBar.innerHTML = `GAME OVER!`
+  const announcement = `WINNER: ${winner}`
+  flashText(announcement, infoBar2, 41)
+  saveState = true
+  saveButton.style.visibility = 'visible'
+}
 ```

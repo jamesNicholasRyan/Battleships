@@ -56,6 +56,18 @@ main {
   text-align: center;
   width: 250px;
   height: 50px;
+  margin-top: 5px;
+  border: 5px solid orange;
+  border-radius: 10px;
+  transition: 500ms;
+}
+
+.menuButton2 {
+  font-size: 25px;
+  color: orange;
+  text-align: center;
+  width: 250px;
+  height: 50px;
   margin-top: 0px;
   border: 5px solid orange;
   border-radius: 10px;
@@ -69,6 +81,7 @@ main {
 
 .stars {
   width: 100px;
+  border: 10px solid maroon;
   border-radius: 50px;
   margin: 0px 300px;
 }

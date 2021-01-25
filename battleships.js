@@ -6,8 +6,14 @@ const livesBarOne = document.querySelector('.playerLivesBar')
 const livesBarTwo = document.querySelector('.computerLivesBar')
 const livesOne = document.querySelector('.playerOneLivesNum')      // update lives in HTML
 const livesTwo = document.querySelector('.playerTwoLivesNum')      // update lives in HTML
-const audioPlayer = document.querySelector('audio')
+const audioPlayer = document.querySelector('.audio1')
+const audioPlayer2 = document.querySelector('.audio2')
+// audioPlayer2.src = './sounds/redFleetTheme25012021.wav'    
+// setTimeout(() => {audioPlayer2.play()},2000)
+
 audioPlayer.volume = 0.3
+audioPlayer2.volume = 0.5
+
 
 class Board {
   constructor(rows, columns, width, boardNum) {
@@ -16,7 +22,6 @@ class Board {
     this.width = width
     this.cells = []
     this.boardNum = boardNum
-    // this.displayCounter = 6
   }
 
   display() {
@@ -259,6 +264,7 @@ const scores = document.querySelector('.scores')
 const menu = document.querySelector('.menuScreen')
 const startButton = document.querySelector('.startGame')
 const menuReturn = document.querySelector('.menuReturn')
+const settings = document.querySelector('.settings')
 const menuButtons = Array.from(document.querySelectorAll('.menuButton'))
 const logo = document.querySelector('.logo')
 let saveState = false
@@ -361,6 +367,7 @@ startButton.addEventListener('click', () => {
     button.classList.toggle('hidden')
   })
   setTimeout(() => {
+    menuReturn.classList.toggle('hidden')
     startButton.innerHTML = 'RETURN'
     menu.style.justifyContent = 'center'
     logo.classList.toggle('hidden')
@@ -369,6 +376,7 @@ startButton.addEventListener('click', () => {
 menuReturn.addEventListener('click', () => {
   menu.style.height = '1050px'
   logo.style.width = '400px'
+  menuReturn.classList.toggle('hidden')
   setTimeout(() => {
     menu.style.justifyContent = 'flex-start'
     logo.classList.toggle('hidden')
@@ -377,6 +385,10 @@ menuReturn.addEventListener('click', () => {
     })
   }, 900)
 })
+function togglePlay(audio) {
+  return audio.paused ? audio.play() : audio.pause();
+};
+settings.addEventListener('click', () => togglePlay(audioPlayer2))
 
 rotateButton1.addEventListener('click', () => {              
   rotateShips(1)

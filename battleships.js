@@ -255,6 +255,12 @@ const attackPhaseButton = document.querySelector('.attackPhase')      // next ph
 const resetButton = document.querySelector('.resetButton')
 const saveButton = document.querySelector('.saveButtonContainer')
 const scores = document.querySelector('.scores')
+// menu buttons & variables //
+const menu = document.querySelector('.menuScreen')
+const startButton = document.querySelector('.startGame')
+const menuReturn = document.querySelector('.menuReturn')
+const menuButtons = Array.from(document.querySelectorAll('.menuButton'))
+const logo = document.querySelector('.logo')
 let saveState = false
 
 addAttack(boardTwo)  // calling this ONCE per game! at the start and never again
@@ -333,7 +339,7 @@ function setUp() {                  // -------------------- function to reset/se
       i--
     }
     counter ++
-    notAttackedFiltered.push(notAttacked[i])d'
+    notAttackedFiltered.push(notAttacked[i])
   }
   saveButton.style.visibility = 'hidden'
 
@@ -347,6 +353,30 @@ function setUp() {                  // -------------------- function to reset/se
 }
 
 displayScores()
+
+startButton.addEventListener('click', () => {
+  menu.style.height = '0px'
+  logo.style.width = '0px'
+  menuButtons.forEach((button) => {
+    button.classList.toggle('hidden')
+  })
+  setTimeout(() => {
+    startButton.innerHTML = 'RETURN'
+    menu.style.justifyContent = 'center'
+    logo.classList.toggle('hidden')
+  }, 900)
+})
+menuReturn.addEventListener('click', () => {
+  menu.style.height = '1050px'
+  logo.style.width = '400px'
+  setTimeout(() => {
+    menu.style.justifyContent = 'flex-start'
+    logo.classList.toggle('hidden')
+    menuButtons.forEach((button) => {
+      button.classList.toggle('hidden')
+    })
+  }, 900)
+})
 
 rotateButton1.addEventListener('click', () => {              
   rotateShips(1)

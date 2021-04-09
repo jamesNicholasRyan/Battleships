@@ -1,5 +1,5 @@
 ### ![GA](https://cloud.githubusercontent.com/assets/40461/8183776/469f976e-1432-11e5-8199-6ac91363302b.png) General Assembly, Software Engineering Immersive
-# BATTLESHIPS <img src= assets/Explosion.png height=50 width=50 />
+# BATTLESHIPS
 
 ## Overview
 This was my first front-end development project, created as part of General Assembly's Software Engineering Immersive bootcamp.
@@ -265,6 +265,14 @@ function endGame() {
 ```
 
 # Conclusion
+
+## Key learnings
+I thoroughly enjoyed creating Battleships. I enjoyed applying my new skills in; JavaScript array functions, the use of Classes and their hereditary abilities and understanding how the DOM works without any font-end frameworks. There were many challenges, which I outline below, however, I was excited to expand on my knowledge of pathfinding and applying it to a project like this one. 
+
+I also learnt the importance of planning when developing software. It was interesting pseudo coding out the plan before starting any code, whilst helping in the workflow, this really helped to expand and exercise my new knowledge of JavaScript. 
+
+Having learnt more since this project was completed, there are a few things I would change. One aspect, which may not change the functionality of the code itself but is rather a best practice method, would be to neaten the code and separate the components into different files. This would aid in any potential collaboration or review from other people. 
+
 
 ## Challenges
 - Figuring out how to compute the AIs directional logic was a challenge. I initially had the computer attack in one direction until they *MISSED*, however, this ran into trouble when the computer was attacking the edges of the board. I finally settled with a direction-finder function that could be called anywhere. 
